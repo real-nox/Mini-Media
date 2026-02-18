@@ -1,5 +1,6 @@
 import * as login_repositories from "../repositories/login.repositories.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export const singinUser = async (username, email, password) => {
 
@@ -22,11 +23,6 @@ export const singinUser = async (username, email, password) => {
 
     password = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 
-    const hasPassword = await login_repositories.hasPassword(password)
-
-    if (hasPassword)
-        return { success: false, error: "There is an account matching your information" }
-
     const result = await login_repositories.save_User(username, email, password)
 
     if (result)
@@ -40,24 +36,36 @@ export const loginUser = async (email, password) => {
 
     //email = email.toLowerCase()
 
-    const hasEmail = await login_repositories.hasEmail(email)
+    const user = await login_repositories.hasEmail(email)
 
-    console.log(!hasEmail)
-    if (!hasEmail)
+    if (!user)
         return { success: false, error: "Incorrect Email/Password" }
 
-    const oldPassword = await login_repositories.getPassword(email)
+    const oldPassword = user[0].password
 
-    //continue here
-    const hasPassword = await login_repositories.hasPassword(password)
+    const isthepwd = bcrypt.compareSync(password, oldPassword)
 
-    console.log(password)
-    console.log((!hasPassword))
-    if (!hasPassword)
+    password = oldPassword
+
+    if (!isthepwd)
         return { success: false, error: "Incorrect Email/Password" }
 
     const result = await login_repositories.log_User(email, password)
 
-    if (result)
-        return { success: true, error: null };
+    if (!result)
+        return { success: false, error: "Please try again!" };
+
+    const LToken = jwt.sign(
+        { user_id: user[0].user_id, username: user[0].username },
+        process.env.LkeyToken,
+        { expiresIn: "7d" })
+
+    const SToken = jwt.sign(
+        { user_id: user[0].user_id, username: user[0].username },
+        process.env.SkeyToken,
+        { expiresIn: "7d" })
+
+    await login_repositories.saveTokens(user[0].user_id, LToken)
+
+    return { success: true, error: null, Tokens: { short: SToken, long: LToken } }
 }

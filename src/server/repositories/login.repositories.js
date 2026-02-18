@@ -16,32 +16,15 @@ export const hasUsername = async (username) => {
 
 export const hasEmail = async (email) => {
     try {
-        const result = await query("select emails from users where emails = $1", [email])
+        const result = await query("select * from users where emails = $1", [email])
 
         if (!result?.rows.length)
             return false
 
-        return true
+        return result?.rows
     } catch (err) {
         console.log(err)
     }
-}
-
-export const hasPassword = async (pwd) => {
-    try {
-        const result = await query("select password from users where password = $1", [pwd])
-
-        if (!result?.rows.length)
-            return false
-
-        return true
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-export const getPassword = async (email) => {
-
 }
 
 export const save_User = async (username, email, password) => {
@@ -59,7 +42,6 @@ export const hasIdUser = async (username) => {
         if (!result?.rows.length)
             return false
 
-        console.log(result?.rows)
         return result?.rows
     } catch (err) {
         console.log(err)
@@ -67,7 +49,20 @@ export const hasIdUser = async (username) => {
 }
 
 export const log_User = async (email, password) => {
-    const result = await query("select * from users where emails and password = $1, $2", [email, password])
+    const result = await query("select * from users where emails = $1 and password = $2", [email, password])
 
-    console.log(result)
+    if (!result?.rows.length)
+        return false
+
+    return true
+}
+
+export const saveTokens = async (user_id, LToken) => {
+    const result = await query("insert into sessions(refresht_id, user_id, expires_at) values($1,$2,$3)",
+        [LToken, user_id, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)])
+
+    if (!result?.rows.length)
+        return false
+
+    return true
 }
