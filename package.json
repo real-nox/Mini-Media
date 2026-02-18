@@ -1,0 +1,20 @@
+{
+  "name": "smedia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server/main.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon src/server/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.3.1",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "pg": "^8.18.0"
+  }
+}
