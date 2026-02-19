@@ -12,6 +12,9 @@
     <a href="/login">Login</a>
     <p><%=error ? error : ""%></p>
     <form action="sign-in" method="post">
+        <label for="nickname">Game Tag</label>
+        <input type="text" name="nickname" id="nickname">
+
         <label for="username">Username</label>
         <input type="text" name="username" id="username">
 

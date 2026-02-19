@@ -2,9 +2,9 @@ import * as login_repositories from "../repositories/login.repositories.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
-export const singinUser = async (username, email, password) => {
+export const singinUser = async (nickname, username, email, password) => {
 
-    if (!username || !email || !password)
+    if (!nickname || !username || !email || !password)
         return { success: false, error: "Complete the fields" }
 
     username = username.toLowerCase()
@@ -23,7 +23,7 @@ export const singinUser = async (username, email, password) => {
 
     password = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 
-    const result = await login_repositories.save_User(username, email, password)
+    const result = await login_repositories.save_User(nickname, username, email, password)
 
     if (result)
         return { success: true, error: null };
@@ -71,7 +71,7 @@ export const loginUser = async (email, password) => {
 }
 
 export const logoutUser = async (user_id, token) => {
-    const foundToken = jwt.verify(token, process.env.LkeyToken)
+    jwt.verify(token, process.env.LkeyToken)
     
     await login_repositories.deleteToken(user_id, token)
 }

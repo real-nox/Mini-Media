@@ -27,8 +27,8 @@ export const hasEmail = async (email) => {
     }
 }
 
-export const save_User = async (username, email, password) => {
-    const result = await query("insert into users (username, emails, password) values ($1, $2, $3)", [username, email, password])
+export const save_User = async (nickname, username, email, password) => {
+    const result = await query("insert into users (nickname, username, emails, password) values ($1, $2, $3, $4)", [nickname, username, email, password])
     if (!result?.rows.length)
         return false
 

@@ -1,0 +1,21 @@
+:root {
+    --dark_mode_bg: rgb(45, 45, 45);
+    --dark_mode_txt_c: white;
+    --white_mode_bg: rgb(255, 255, 255);
+    --white_mode_txt_c: rgb(0, 0, 0);
+}
+
+* {
+    margin: 0;
+}
+
+.maincontainer {
+    background-color: var(--white_mode_bg);
+    color: var(--white_mode_txt_c);
+    min-height: 100vh;
+}
+
+.maincontainer.dark {
+    background-color: var(--dark_mode_bg);
+    color: var(--dark_mode_txt_c);
+}

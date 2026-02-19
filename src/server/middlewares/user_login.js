@@ -6,3 +6,12 @@ export const userLM = (req, res, next) => {
 
     next()
 }
+
+export const modes = (req, res, next) => {
+    req.mode = ["ligth"]
+    
+    if(req.cookies?.ssmodes)
+        req.mode = [req.cookies?.ssmodes]
+
+    next()
+}

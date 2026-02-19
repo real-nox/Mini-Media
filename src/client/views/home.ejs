@@ -4,23 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
     <title>Home</title>
 </head>
 
 <body>
-    <% if (!user) { %>
-        <p>Welcome to social media web!</p>
-        <a href="/login">Login</a>
-        <a href="/sign-in">Sign in</a>
-        <% } else {%>
-            <p>Welcome <strong>
-                    <%=user.length ? user.username : " " %>
-                </strong> to social media web!</p>
-            <a href="/logout">Logout</a>
-            <a href="/<%= user.username %>">Profile</a>
-            <% }%>
+    <div id="maincontainer" class="maincontainer <%= mode %>">
+        <% if (!user) { %>
+            <p>Welcome to social media web!</p>
+            <a href="/login">Login</a>
+            <a href="/sign-in">Sign in</a>
+            <% } else {%>
+                <p>Welcome <strong>
+                        <%=user.length ? user.username : " " %>
+                    </strong> to social media web!</p>
+                <a href="/logout">Logout</a>
+                <a href="/<%= user.username %>">Profile</a>
+                <% }%>
 
-            <script src="/js/perm.js"></script>
+                    <button id="modesBTN" onclick="toggleMode()">
+                        <% if(mode === "dark") {%> Light Mode <% } else {%> Dark Mode <%}%>
+                    </button>
+    </div>
+    <script src="/js/perm.js"></script>
+    <script src="/js/modes.js"></script>
 </body>
 
 </html>

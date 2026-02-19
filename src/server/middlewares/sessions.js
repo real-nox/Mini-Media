@@ -28,7 +28,23 @@ export const authU = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.LkeyToken)
         req.user = decoded
-        
+
+        return next()
+    } catch (error) {
+        console.log(error)
+        return res.redirect("/")
+    }
+}
+
+export const isAuth = (req, res, next) => {
+    const token = req.cookies?.ssid
+
+    if (!token)
+        return next()
+
+    try {
+        const decoded = jwt.verify(token, process.env.LkeyToken)
+        req.user = decoded
         return next()
     } catch (error) {
         console.log(error)

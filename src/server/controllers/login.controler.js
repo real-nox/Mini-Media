@@ -2,9 +2,9 @@ import * as login_service from "../services/login.service.js";
 
 export const singin = async (req, res, next) => {
     try {
-        const { username, email, password } = req.body
+        const { nickname, username, email, password } = req.body
 
-        const result = await login_service.singinUser(username, email, password)
+        const result = await login_service.singinUser(nickname, username, email, password)
         const { success, error } = result
 
         if (success)

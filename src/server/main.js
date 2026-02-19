@@ -3,10 +3,11 @@ import express from "express"
 import { join, dirname } from "path"; import { fileURLToPath } from "url"
 import cookieParser from "cookie-parser";
 
-import db from "./db/database.js";
 import loginR from "./routers/login.js";
 import { authS } from "./middlewares/sessions.js";
 import userR from "./routers/user.js";
+import { modes } from "./middlewares/user_login.js";
+import api from "./routers/api.js";
 
 const app = express()
 
@@ -22,10 +23,12 @@ app.use(express.static(join(__dirname, "../client/public")))
 
 app.use(loginR)
 app.use(userR)
+app.use(api)
 
-app.get("/", authS, (req, res) => {
+app.get("/", modes, authS, (req, res) => {
     const user = req.user
-    return res.render("home", { user })
+    const mode = req.mode
+    return res.render("home", { user, mode })
 })
 
 app.use((req, res, next) => {
