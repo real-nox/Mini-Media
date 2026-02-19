@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 export const authS = (req, res, next) => {
     const token = req.cookies?.ssid
 
+    res.locals.user = []
     if (!token)
         return res.redirect("/")
 

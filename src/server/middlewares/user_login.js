@@ -6,7 +6,3 @@ export const userLM = (req, res, next) => {
 
     next()
 }
-
-export const auth = (req, res, next) => {
-    
-}

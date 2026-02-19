@@ -37,8 +37,26 @@ export const login = async (req, res, next) => {
             path: "/",
             httpOnly: true
         })
-        
+
         return res.redirect("/home")
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const logout = (req, res, next) => {
+    try {
+        if (!req.cookies) 
+            res.status(401).send("Unauthorized method")
+
+        console.log(req.user)
+        //clear cookies
+        res.clearCookie("ssid")
+        res.clearCookie("shssid")
+
+        //Removal from db
+        login_service.logoutUser(req.user.user_id)
+        res.redirect("/")
     } catch (err) {
         console.log(err)
     }

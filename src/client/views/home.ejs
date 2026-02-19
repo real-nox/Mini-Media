@@ -8,9 +8,13 @@
 </head>
 
 <body>
-    <p>Welcome to social media web!</p>
-    <a href="/login">Login</a>
-    <a href="/sign-in">Sign in</a>
+    <% if (!user) { %>
+        <p>Welcome to social media web!</p>
+        <a href="/login">Login</a>
+        <a href="/sign-in">Sign in</a>
+        <% } %>
+        <p>Welcome <strong> <%=user.username%> </strong> to social media web!</p>
+    <a href="/logout">Logout</a>
 </body>
 
 </html>

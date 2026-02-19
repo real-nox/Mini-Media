@@ -25,14 +25,6 @@ app.get("/", (req, res) => {
     return res.render("home")
 })
 
-app.get("/login", (req, res) => {
-    res.render("logins/login")
-})
-
-app.get("/sign-in", (req, res) => {
-    res.render("logins/signin")
-})
-
 app.get("/home", authS, (req, res) => {
     if (!req.user)
         return res.redirect("/")

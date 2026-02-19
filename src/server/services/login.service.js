@@ -69,3 +69,7 @@ export const loginUser = async (email, password) => {
 
     return { success: true, error: null, Tokens: { short: SToken, long: LToken } }
 }
+
+export const logoutUser = async (user_id) => {
+    
+}
