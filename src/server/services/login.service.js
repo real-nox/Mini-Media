@@ -58,12 +58,12 @@ export const loginUser = async (email, password) => {
     const LToken = jwt.sign(
         { user_id: user[0].user_id, username: user[0].username },
         process.env.LkeyToken,
-        { expiresIn: "7d" })
+        { expiresIn: "30d" })
 
     const SToken = jwt.sign(
         { user_id: user[0].user_id, username: user[0].username },
         process.env.SkeyToken,
-        { expiresIn: "7d" })
+        { expiresIn: "15m" })
 
     await login_repositories.saveTokens(user[0].user_id, LToken)
 
@@ -72,4 +72,20 @@ export const loginUser = async (email, password) => {
 
 export const logoutUser = async (user_id) => {
     
+}
+
+export const refreshT = async (refreshToken) => {
+
+    const foundToken = jwt.verify(refreshToken, process.env.LkeyToken)
+    const findUser = login_repositories.hasIdUser(foundToken.user_id)
+
+    if (!findUser)
+        throw new Error("Unfound user");
+
+    const SToken = jwt.sign(
+        { user_id: user[0].user_id, username: user[0].username },
+        process.env.SkeyToken,
+        { expiresIn: "15m" })
+
+    return SToken
 }

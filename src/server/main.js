@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import db from "./db/database.js";
 import loginR from "./routers/login.js";
 import { authS } from "./middlewares/sessions.js";
+import userR from "./routers/user.js";
 
 const app = express()
 
@@ -20,17 +21,18 @@ app.set("views", join(__dirname, "../client/views"))
 app.use(express.static(join(__dirname, "../client/public")))
 
 app.use(loginR)
+app.use(userR)
 
 app.get("/", (req, res) => {
     return res.render("home")
 })
 
 app.get("/home", authS, (req, res) => {
-    if (!req.user)
+    if (!req?.user)
         return res.redirect("/")
 
     const user = req.user
-    return res.render("home", { user })
+    return res.render("homepage", { user })
 })
 
 app.listen(process.env.port, () => {

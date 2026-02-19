@@ -47,7 +47,7 @@ export const login = async (req, res, next) => {
 export const logout = (req, res, next) => {
     try {
         if (!req.cookies) 
-            res.status(401).send("Unauthorized method")
+            res.status(401).json("Unauthorized method")
 
         console.log(req.user)
         //clear cookies
@@ -57,6 +57,19 @@ export const logout = (req, res, next) => {
         //Removal from db
         login_service.logoutUser(req.user.user_id)
         res.redirect("/")
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const refresh = async (req, res, next) => {
+    try {
+        if (!req.cookies.ssid || !req.body.ssid)
+            return res.status(401).json("No token provided")
+
+        const refreshT = await login_service.refreshT(ssid)
+        if(refreshT)
+            return res.json(refreshT)
     } catch (err) {
         console.log(err)
     }

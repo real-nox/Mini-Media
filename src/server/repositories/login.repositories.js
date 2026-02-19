@@ -35,9 +35,9 @@ export const save_User = async (username, email, password) => {
     return true
 }
 
-export const hasIdUser = async (username) => {
+export const hasIdUser = async (id) => {
     try {
-        const result = await query("select * from users where emails = $1", [email])
+        const result = await query("select * from users where id = $1", [id])
 
         if (!result?.rows.length)
             return false
@@ -59,7 +59,7 @@ export const log_User = async (email, password) => {
 
 export const saveTokens = async (user_id, LToken) => {
     const result = await query("insert into sessions(refresht_id, user_id, expires_at) values($1,$2,$3)",
-        [LToken, user_id, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)])
+        [LToken, user_id, new Date(Date.now() + 24 * 24 * 60 * 60 * 1000)])
 
     if (!result?.rows.length)
         return false
