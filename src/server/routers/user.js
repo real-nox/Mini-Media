@@ -1,10 +1,11 @@
 import { Router } from "express"
-import { authS } from "../middlewares/sessions.js"
+import { authU } from "../middlewares/sessions.js"
 
 const userR = Router()
 
-userR.get("/users/:username", authS, (req, res) => {
-    res.render("user/profile")
+userR.get("/:username", authU, (req, res) => {
+    const user = req.user
+    res.render("user/profile", {user})
 })
 
 export default userR

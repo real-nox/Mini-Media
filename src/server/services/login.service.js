@@ -70,20 +70,22 @@ export const loginUser = async (email, password) => {
     return { success: true, error: null, Tokens: { short: SToken, long: LToken } }
 }
 
-export const logoutUser = async (user_id) => {
+export const logoutUser = async (user_id, token) => {
+    const foundToken = jwt.verify(token, process.env.LkeyToken)
     
+    await login_repositories.deleteToken(user_id, token)
 }
 
 export const refreshT = async (refreshToken) => {
 
     const foundToken = jwt.verify(refreshToken, process.env.LkeyToken)
-    const findUser = login_repositories.hasIdUser(foundToken.user_id)
+    const findUser = await login_repositories.hasIdUser(foundToken.user_id)
 
     if (!findUser)
         throw new Error("Unfound user");
 
     const SToken = jwt.sign(
-        { user_id: user[0].user_id, username: user[0].username },
+        { user_id: findUser[0].user_id, username: findUser[0].username },
         process.env.SkeyToken,
         { expiresIn: "15m" })
 

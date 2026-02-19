@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { login, logout, refresh, singin } from "../controllers/login.controler.js"
 import { userLM } from "../middlewares/user_login.js"
-import { authS } from "../middlewares/sessions.js"
+import { authU } from "../middlewares/sessions.js"
 
 const loginR = Router()
 
@@ -19,8 +19,8 @@ loginR.get("/sign-in", (req, res) => {
 
 loginR.post("/sign-in", singin)
 
-loginR.get("/logout", authS, logout)
+loginR.get("/logout", authU, logout)
 
-loginR.post("/refresh", refresh)
+loginR.get("/refresh", authU, refresh)
 
 export default loginR

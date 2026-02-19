@@ -3,15 +3,35 @@ import jwt from "jsonwebtoken"
 export const authS = (req, res, next) => {
     const token = req.cookies?.ssid
 
-    res.locals.user = []
+    if (!token) {
+        req.user = null
+        return next()
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.LkeyToken)
+        req.user = decoded
+        return next()
+    } catch (error) {
+        console.log(error)
+        req.user = null
+        next()
+    }
+}
+
+export const authU = (req, res, next) => {
+    const token = req.cookies?.ssid
+
     if (!token)
         return res.redirect("/")
 
     try {
-        const decoded = jwt.decode(token, process.env.LkeyToken)
+        const decoded = jwt.verify(token, process.env.LkeyToken)
         req.user = decoded
-        next()
+        
+        return next()
     } catch (error) {
         console.log(error)
+        return res.redirect("/")
     }
 }

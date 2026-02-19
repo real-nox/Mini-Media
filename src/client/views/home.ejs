@@ -8,9 +8,19 @@
 </head>
 
 <body>
-    <p>Welcome to social media web!</p>
-    <a href="/login">Login</a>
-    <a href="/sign-in">Sign in</a>
+    <% if (!user) { %>
+        <p>Welcome to social media web!</p>
+        <a href="/login">Login</a>
+        <a href="/sign-in">Sign in</a>
+        <% } else {%>
+            <p>Welcome <strong>
+                    <%=user.length ? user.username : " " %>
+                </strong> to social media web!</p>
+            <a href="/logout">Logout</a>
+            <a href="/<%= user.username %>">Profile</a>
+            <% }%>
+
+            <script src="/js/perm.js"></script>
 </body>
 
 </html>
