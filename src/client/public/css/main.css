@@ -19,3 +19,11 @@
     background-color: var(--dark_mode_bg);
     color: var(--dark_mode_txt_c);
 }
+
+.postC {
+    opacity: 1;
+}
+
+.postC.hidden {
+    opacity: 0;
+}

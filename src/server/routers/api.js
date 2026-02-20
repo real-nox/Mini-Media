@@ -1,32 +1,17 @@
 import { Router } from "express"
+import { authU } from "../middlewares/sessions.js"
+import { LikePost, modeApi, postLikes, postOwner, postsList } from "../controllers/api.controler.js"
 
 const api = Router()
 
-api.get("/api/modes/toggle", (req, res) => {
+api.get("/api/modes/toggle", modeApi)
 
-    let mode = "white"
-    if (!req.cookies.ssmodes) {
-        res.cookie("ssmodes", "dark")
-    }
+api.get("/api/posts", authU, postsList)
 
-    if (req.cookies.ssmodes && req.cookies.ssmodes === "dark") {
-        res.clearCookie("ssmodes")
-        res.cookie("ssmodes", "light", {
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: "/",
-            httpOnly: true
-        })
-    } else {
-        mode = "dark"
-        res.clearCookie("ssmodes")
-        res.cookie("ssmodes", "dark", {
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: "/",
-            httpOnly: true
-        })
-    }
+api.get("/api/likes/:post", authU, postLikes)
 
-    res.json(mode)
-})
+api.get("/api/post/:owner", authU, postOwner)
+
+api.get("/api/post/like/:post", authU, LikePost)
 
 export default api

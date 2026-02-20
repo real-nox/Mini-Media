@@ -34,13 +34,19 @@ export const loginUser = async (email, password) => {
     if (!email || !password)
         return { success: false, error: "Complete the fields" }
 
-    //email = email.toLowerCase()
+    email = email.toLowerCase()
 
-    const user = await login_repositories.hasEmail(email)
+    const foundbyEmail = await login_repositories.hasEmail(email)
+    const foundbyUsername = await login_repositories.hasUsername(email)
 
-    if (!user)
+    if (!foundbyEmail && !foundbyUsername)
         return { success: false, error: "Incorrect Email/Password" }
 
+    let user = null
+
+    foundbyEmail ? user = foundbyEmail : user = foundbyUsername
+
+    console.log(user)
     const oldPassword = user[0].password
 
     const isthepwd = bcrypt.compareSync(password, oldPassword)
@@ -72,6 +78,10 @@ export const loginUser = async (email, password) => {
 
 export const logoutUser = async (user_id, token) => {
     jwt.verify(token, process.env.LkeyToken)
+
+    const user = await login_repositories.hasIdUser(user_id)
+
+    if (!user) return false
     
     await login_repositories.deleteToken(user_id, token)
 }
@@ -82,7 +92,7 @@ export const refreshT = async (refreshToken) => {
     const findUser = await login_repositories.hasIdUser(foundToken.user_id)
 
     if (!findUser)
-        throw new Error("Unfound user");
+        return false;
 
     const SToken = jwt.sign(
         { user_id: findUser[0].user_id, username: findUser[0].username },

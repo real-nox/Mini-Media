@@ -8,6 +8,7 @@ import { authS } from "./middlewares/sessions.js";
 import userR from "./routers/user.js";
 import { modes } from "./middlewares/user_login.js";
 import api from "./routers/api.js";
+import postR from "./routers/posts.js";
 
 const app = express()
 
@@ -24,6 +25,7 @@ app.use(express.static(join(__dirname, "../client/public")))
 app.use(loginR)
 app.use(userR)
 app.use(api)
+app.use(postR)
 
 app.get("/", modes, authS, (req, res) => {
     const user = req.user

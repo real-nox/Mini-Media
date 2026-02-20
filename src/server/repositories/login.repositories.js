@@ -2,13 +2,13 @@ import query from "../db/database.js"
 
 export const hasUsername = async (username) => {
     try {
-        const result = await query("select username from users where username = $1", [username])
+        const result = await query("select * from users where username = $1", [username])
 
 
         if (!result?.rows.length)
             return false
 
-        return true
+        return result?.rows
     } catch (err) {
         console.log(err)
     }
@@ -29,9 +29,8 @@ export const hasEmail = async (email) => {
 
 export const save_User = async (nickname, username, email, password) => {
     const result = await query("insert into users (nickname, username, emails, password) values ($1, $2, $3, $4)", [nickname, username, email, password])
-    if (!result?.rows.length)
-        return false
 
+    console.log(result)
     return true
 }
 
@@ -50,19 +49,17 @@ export const hasIdUser = async (id) => {
 
 export const log_User = async (email, password) => {
     const result = await query("select * from users where emails = $1 and password = $2", [email, password])
+    const result1 = await query("select * from users where username = $1 and password = $2", [email, password])
 
-    if (!result?.rows.length)
+    if (!result?.rows.length && !result1?.rows.length)
         return false
 
     return true
 }
 
 export const saveTokens = async (user_id, LToken) => {
-    const result = await query("insert into sessions(refresht_id, user_id, expires_at) values($1,$2,$3)",
+    await query("insert into sessions(refresht_id, user_id, expires_at) values($1,$2,$3)",
         [LToken, user_id, new Date(Date.now() + 24 * 24 * 60 * 60 * 1000)])
-
-    if (!result?.rows.length)
-        return false
 
     return true
 }

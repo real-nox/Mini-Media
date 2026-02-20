@@ -20,14 +20,25 @@
                     </strong> to social media web!</p>
                 <a href="/logout">Logout</a>
                 <a href="/<%= user.username %>">Profile</a>
-                <% }%>
 
-                    <button id="modesBTN" onclick="toggleMode()">
-                        <% if(mode === "dark") {%> Light Mode <% } else {%> Dark Mode <%}%>
-                    </button>
+                <button id="modesBTN" onclick="toggleMode()">
+                    <% if(mode==="dark" ) {%> Light Mode <% } else {%> Dark Mode <%}%>
+                </button>
+
+                <button onclick="createpost()">Create post</button>
+                <div id="postC" class="postC hidden">
+                    <form action="/create-post" method="post">
+                        <label for="content">Content</label>
+                        <textarea name="content" id="content"></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                </div>
+
+                <div class="posts" id="posts"></div>
+                <script src="/js/core.js"></script>
+                <% }%>
     </div>
     <script src="/js/perm.js"></script>
-    <script src="/js/modes.js"></script>
 </body>
 
 </html>

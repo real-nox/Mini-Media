@@ -21,6 +21,7 @@ export const login = async (req, res, next) => {
         const { email, password } = req.body
 
         const result = await login_service.loginUser(email, password)
+        console.log(result)
         const { success, error } = result
 
         if (!success)
@@ -68,6 +69,15 @@ export const refresh = async (req, res, next) => {
             return res.status(401).json("No token provided")
 
         const refreshT = await login_service.refreshT(req.cookies.ssid)
+
+        if (!refreshT) {
+            if (req.cookies.ssid) 
+                res.clearCookie("ssid")
+            if (req.cookies.shssid)
+                res.clearCookie("shssid")
+
+            return res.redirect("/")
+        } 
 
         res.cookie("shssid", refreshT, {
             maxAge: 900000,
