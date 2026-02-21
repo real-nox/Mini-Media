@@ -1,5 +1,5 @@
 import { hasIdUser } from "../repositories/login.repositories.js"
-import { addcmt, addLike, get_like, getcmt, getPost, listPosts, removeLike } from "../repositories/posts.repositories.js"
+import { addcmt, addLike, delcmt, get_like, getcmt, getPost, listPosts, removeLike } from "../repositories/posts.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -39,13 +39,13 @@ export const Like = async (liker, post_id) => {
     return result
 }
 
-export const Getcomments = async (post_id) => {
+export const Getcomments = async (post_id, limit, cursor) => {
     const foundpost = await getPost(post_id)
 
     if (!foundpost)
         return false
 
-    return await getcmt(post_id)
+    return await getcmt(post_id, limit, cursor)
 }
 
 export const AddComment = async (post_id, user_id, content) => {
@@ -59,5 +59,20 @@ export const AddComment = async (post_id, user_id, content) => {
     if (!findUser)
         return false
 
-    return await addcmt(post_id, user_id, content)
+    return { fct: await addcmt(post_id, user_id, content), user: findUser[0].username }
+}
+
+export const DeleteComment = async (post_id, user_id) => {
+
+    const foundpost = await getPost(post_id)
+
+    if (!foundpost)
+        return false
+
+    const findUser = await hasIdUser(user_id)
+
+    if (!findUser)
+        return false
+
+    return await delcmt(post_id, user_id)
 }

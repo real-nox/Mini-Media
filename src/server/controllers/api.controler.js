@@ -93,8 +93,10 @@ export const LikePost = async (req, res, next) => {
 export const CommentsGet = async (req, res, next) => {
     try {
         const post_id = req.params.post
+        const limit = parseInt(req.query.limit) || null
+        const cursor = req.query.cursor || null
 
-        const result = await apiServices.Getcomments(post_id)
+        const result = await apiServices.Getcomments(post_id, limit, cursor)
 
         res.json(result)
     } catch (err) {
@@ -108,9 +110,24 @@ export const CommentsAdd = async (req, res, next) => {
         const user_id = req.user.user_id
         const content = req.body.content
 
-        await apiServices.AddComment(post_id, user_id, content)
+        const result = await apiServices.AddComment(post_id, user_id, content)
 
-        res.json(true)
+        const { fct, user } = result
+
+        res.json({ post_id, user_id, content, user })
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+export const CommentsDelete = async (req, res, next) => {
+    try {
+        const post_id = req.params.post
+        const user_id = req.params.user_id
+
+        const result = await apiServices.DeleteComment(post_id, user_id)
+
+        res.json(result)
     } catch (err) {
         console.error(err)
     }

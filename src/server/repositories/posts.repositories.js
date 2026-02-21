@@ -45,18 +45,21 @@ export const removeLike = async (post_id, liker) => {
     return -1
 }
 
-export const getcmt = async (post_id) => {
+export const getcmt = async (post_id, limit, cursor) => {
     const result = await query(`
         select 
         c.comment_id,
         u.username,
         c.p_content,
-        c.created_at
+        c.created_at,
+        c.p_comment_author_id
         from post_comments c
         left join users u on u.user_id = c.p_comment_author_id
         where post_id = $1
-        order by created_at desc
-        `, [post_id])
+        and ($2::timestamptz is null or c.created_at > $2)
+        order by c.created_at desc
+        limit $3
+        `, [post_id, cursor, limit])
 
     return result.rows
 }
@@ -72,6 +75,14 @@ export const getPost = async (post_id) => {
 
 export const addcmt = async (post_id, user_id, content) => {
     const result = await query("insert into post_comments (post_id, p_comment_author_id, p_content) values($1, $2, $3)", [post_id, user_id, content])
+
+    if (result?.rowCount)
+        return true
+    return false
+}
+
+export const delcmt = async (post_id, user_id) => {
+    const result = await query("delete from post_comments where post_id = $1 and p_comment_author_id = $2", [post_id, user_id])
 
     if (result?.rowCount)
         return true
