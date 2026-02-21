@@ -10,27 +10,26 @@ export const hasUsername = async (username) => {
 
         return result?.rows
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
 export const hasEmail = async (email) => {
     try {
-        const result = await query("select * from users where emails = $1", [email])
+        const result = await query("select * from users where email = $1", [email])
 
         if (!result?.rows.length)
             return false
 
         return result?.rows
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
 export const save_User = async (nickname, username, email, password) => {
-    const result = await query("insert into users (nickname, username, emails, password) values ($1, $2, $3, $4)", [nickname, username, email, password])
+    const result = await query("insert into users (nickname, username, email, password) values ($1, $2, $3, $4)", [nickname, username, email, password])
 
-    console.log(result)
     return true
 }
 
@@ -43,12 +42,12 @@ export const hasIdUser = async (id) => {
 
         return result?.rows
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
 export const log_User = async (email, password) => {
-    const result = await query("select * from users where emails = $1 and password = $2", [email, password])
+    const result = await query("select * from users where email = $1 and password = $2", [email, password])
     const result1 = await query("select * from users where username = $1 and password = $2", [email, password])
 
     if (!result?.rows.length && !result1?.rows.length)

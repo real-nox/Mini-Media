@@ -6,7 +6,6 @@ export const createPost = async (user_id, content) => {
     if (content < 5)
         return { success: false, error: "Short Post!", typeErr: 1 }
 
-    console.log("here")
     const findUser = await hasIdUser(user_id)
 
     if (!findUser)

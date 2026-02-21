@@ -46,7 +46,6 @@ export const loginUser = async (email, password) => {
 
     foundbyEmail ? user = foundbyEmail : user = foundbyUsername
 
-    console.log(user)
     const oldPassword = user[0].password
 
     const isthepwd = bcrypt.compareSync(password, oldPassword)

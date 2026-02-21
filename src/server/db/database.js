@@ -10,9 +10,9 @@ const client = await new Client({
 
 try {
     await client.query("select $1::text as message", ["Connected"])
-    console.log("Connect to Database!")
+    console.info("Connect to Database!")
 } catch (err) {
-    console.log(err)
+    console.error(err)
 }
 
 const query = (instruction, arg) => client.query(instruction, arg)

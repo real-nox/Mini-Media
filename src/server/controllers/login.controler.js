@@ -12,7 +12,7 @@ export const singin = async (req, res, next) => {
         else
             return res.render("logins/signin", { error })
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -21,7 +21,6 @@ export const login = async (req, res, next) => {
         const { email, password } = req.body
 
         const result = await login_service.loginUser(email, password)
-        console.log(result)
         const { success, error } = result
 
         if (!success)
@@ -29,19 +28,21 @@ export const login = async (req, res, next) => {
 
         res.cookie("shssid", result.Tokens.short, {
             maxAge: 900000,
-            path: "/",
-            httpOnly: true
+            secure: true,
+            httpOnly: true,
+            sameSite: "lax"
         })
 
         res.cookie("ssid", result.Tokens.long, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: "/",
-            httpOnly: true
+            secure: true,
+            httpOnly: true,
+            sameSite: "strict"
         })
 
         return res.redirect("/")
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -59,7 +60,7 @@ export const logout = async(req, res, next) => {
         res.clearCookie("shssid")
         res.redirect("/")
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -81,12 +82,13 @@ export const refresh = async (req, res, next) => {
 
         res.cookie("shssid", refreshT, {
             maxAge: 900000,
-            path: "/",
-            httpOnly: true
-        })
+            secure: true,
+            httpOnly: true,
+            sameSite: "lax"
+    })
 
         return res.json(refreshT)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }

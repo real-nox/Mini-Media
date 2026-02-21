@@ -13,7 +13,7 @@ export const authS = (req, res, next) => {
         req.user = decoded
         return next()
     } catch (error) {
-        console.log(error)
+        console.error(error)
         req.user = null
         next()
     }
@@ -31,7 +31,7 @@ export const authU = (req, res, next) => {
 
         return next()
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return res.redirect("/")
     }
 }
@@ -47,7 +47,7 @@ export const isAuth = (req, res, next) => {
         req.user = decoded
         return next()
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return res.redirect("/")
     }
 }

@@ -6,10 +6,8 @@ export const postCreate = async (req, res, next) => {
         const content = req.body.content
 
         const result = await posts_service.createPost(user_id, content)
-        console.log(result)
         const { success, error, typeErr } = result
 
-        console.log(result)
         if (typeErr && typeErr === 5)
             return res.status(503).send(error)
 
@@ -19,6 +17,6 @@ export const postCreate = async (req, res, next) => {
         if (success)
             return res.redirect("/")
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }

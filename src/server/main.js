@@ -38,5 +38,5 @@ app.use((req, res, next) => {
 })
 
 app.listen(process.env.port, () => {
-    console.log("Running on http://localhost:5500")
+    console.info("Running on http://localhost:5500")
 })

@@ -8,18 +8,19 @@ export const savePost = async (user_id, content) => {
 }
 
 export const listPosts = async (limit) => {
-    const result = await query("select * from posts order by created_at desc limit $1", [limit])
+    const result = await query(`select p.post_id,p.p_content,p.created_at,u.username,count(l.post_id) as likes
+        from posts p join users u on p.post_owner_id = u.user_id
+        left join likes l on l.post_id = p.post_id
+        group by p.post_id, u.username
+        order by p.created_at desc limit $1
+        `,
+        [limit]
+    )
 
     if (result?.rows)
         return result?.rows
 
     return false
-}
-
-export const getPostLikes = async (post_id) => {
-    const result = await query("select * from likes where post_id = $1", [post_id])
-
-    return result?.rowCount
 }
 
 export const get_like = async (post_id, liker) => {
@@ -34,12 +35,12 @@ export const addLike = async (post_id, liker) => {
     const result = await query("insert into likes (user_id, post_id) values($1, $2)", [liker, post_id])
 
     if (result?.rowCount)
-        return true
+        return +1
     return false
 }
 
 export const removeLike = async (post_id, liker) => {
     await query("delete from likes where post_id = $1 and user_id = $2", [post_id, liker])
 
-    return true
+    return -1
 }

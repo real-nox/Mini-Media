@@ -1,19 +1,24 @@
 async function toggleMode() {
     try {
-        setTimeout(async () => {
-            const result = await fetch("/api/modes/toggle")
-            const data = await result.json()
+        let result = await fetch("/api/modes/toggle", { method: "POST" })
+        let data = await result.json()
 
-            if (data && data === "dark") {
-                document.getElementById("maincontainer").classList.remove("white")
-                document.getElementById("maincontainer").classList.add("dark")
-                document.getElementById("modesBTN").innerText = "Light Mode"
-            } else {
-                document.getElementById("maincontainer").classList.remove("dark")
-                document.getElementById("maincontainer").classList.add("white")
-                document.getElementById("modesBTN").innerText = "Dark Mode"
-            }
-        }, 500)
+
+        const container = document.getElementById("maincontainer")
+
+        if (data && data === "dark") {
+            if (container.classList.contains("light"))
+                container.classList.remove("light")
+
+            container.classList.add("dark")
+            document.getElementById("modesBTN").innerText = "Light Mode"
+        } else {
+            if (container.classList.contains("dark"))
+                container.classList.remove("dark")
+
+            container.classList.add("light")
+            document.getElementById("modesBTN").innerText = "Dark Mode"
+        }
     } catch (err) {
         console.log(err)
     }
@@ -25,10 +30,20 @@ function createpost() {
 
 window.addEventListener("load", async (ev) => {
 
+    setInterval(async () => {
+
+        const list = await getList()
+
+        if (list) {
+            showList()
+        }
+    }, 1000 * 60 * 5)
+
     const list = await getList()
 
-    if (list)
-        return await showList()
+    if (list) {
+        showList()
+    }
 
     async function showList() {
         const listDiv = document.getElementById("posts")
@@ -37,22 +52,17 @@ window.addEventListener("load", async (ev) => {
 
         listDiv.innerHTML = ""
 
-        for (element of list) {
+        for (const element of list) {
 
-            console.log("here")
-            let owner = await getOwner(element.post_ower_id)
-
-            if (owner == null || owner == "null") return
-
-            let likes = await getLikes(element.post_id)
+            if (!element.username || element.username === "null") continue
             div += '<div class="post ' + element.post_id + '">' +
-                '<div class="user"> <a href="/' + owner + '">' + owner + '</a></div>' +
+                '<div class="user"> <a href="/' + element.username + '">' + element.username + '</a></div>' +
                 '<div class="content"> <p>' + element.p_content + '</p></div>' +
-                '<div class="likes"> <p>' + likes + '</p> <button onclick="like_dislike(' + element.post_id + ')">Like</button></div>' +
+                `<div class="likes"> <p id='likes-${element.post_id}'> ${element.likes} </p> <button onclick="like_dislike('${element.post_id}' )">Like</button></div>` +
                 '</div>'
 
-            listDiv.innerHTML += div
         }
+        listDiv.innerHTML = div
     }
 
     async function getList() {
@@ -68,34 +78,18 @@ window.addEventListener("load", async (ev) => {
         }
     }
 
-    async function getLikes(list) {
-        try {
-            const resultat = await fetch(`/api/likes/${list}`)
-            const data = await resultat.json()
-
-            return data
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    async function getOwner(owner) {
-        try {
-            const resultat = await fetch(`/api/post/${owner}`)
-            const data = await resultat.json()
-
-            return data
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
 })
 
 async function like_dislike(post_id) {
     try {
-        const resultat = await fetch(`/api/post/like/${post_id}`)
+        const likescontent = document.getElementById("likes-" + post_id)
+
+        const resultat = await fetch(`/api/post/like/${post_id}`,
+            { method: "POST" }
+        )
         const data = await resultat.json()
+
+        likescontent.innerText = parseInt(likescontent.innerText) + data
 
         return data
     } catch (err) {

@@ -1,7 +1,7 @@
 import * as apiServices from "../services/api.services.js"
 
 export const modeApi = (req, res, next) => {
-    let mode = "white"
+    let mode = "light"
     if (!req.cookies.ssmodes) {
         res.cookie("ssmodes", "dark")
     }
@@ -26,6 +26,18 @@ export const modeApi = (req, res, next) => {
     res.json(mode)
 }
 
+export const getmodeApi = (req, res, next) => {
+    let mode = "light"
+    if (!req.cookies.ssmodes) {
+        res.cookie("ssmodes", "dark")
+    }
+
+    if (req.cookies.ssmodes && req.cookies.ssmodes === "dark")
+        mode = "dark"
+
+    res.json(mode)
+}
+
 export const postsList = async (req, res, next) => {
     try {
         const limit = req.query?.limit
@@ -37,7 +49,7 @@ export const postsList = async (req, res, next) => {
 
         return res.json(list)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -47,11 +59,9 @@ export const postLikes = async (req, res, next) => {
 
         const likes = await apiServices.LikesPost(post_id)
 
-        console.log(likes)
-
         res.json(likes)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -63,7 +73,7 @@ export const postOwner = async (req, res, next) => {
 
         res.json(owner)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -76,6 +86,6 @@ export const LikePost = async (req, res, next) => {
 
         res.json(result)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
