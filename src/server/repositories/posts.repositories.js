@@ -44,3 +44,36 @@ export const removeLike = async (post_id, liker) => {
 
     return -1
 }
+
+export const getcmt = async (post_id) => {
+    const result = await query(`
+        select 
+        c.comment_id,
+        u.username,
+        c.p_content,
+        c.created_at
+        from post_comments c
+        left join users u on u.user_id = c.p_comment_author_id
+        where post_id = $1
+        order by created_at desc
+        `, [post_id])
+
+    return result.rows
+}
+
+export const getPost = async (post_id) => {
+    const result = await query("select * from posts where post_id = $1", [post_id])
+
+    if (!result?.rows)
+        return false
+
+    return true
+}
+
+export const addcmt = async (post_id, user_id, content) => {
+    const result = await query("insert into post_comments (post_id, p_comment_author_id, p_content) values($1, $2, $3)", [post_id, user_id, content])
+
+    if (result?.rowCount)
+        return true
+    return false
+}

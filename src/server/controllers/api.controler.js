@@ -89,3 +89,29 @@ export const LikePost = async (req, res, next) => {
         console.error(err)
     }
 }
+
+export const CommentsGet = async (req, res, next) => {
+    try {
+        const post_id = req.params.post
+
+        const result = await apiServices.Getcomments(post_id)
+
+        res.json(result)
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+export const CommentsAdd = async (req, res, next) => {
+    try {
+        const post_id = req.params.post
+        const user_id = req.user.user_id
+        const content = req.body.content
+
+        await apiServices.AddComment(post_id, user_id, content)
+
+        res.json(true)
+    } catch (err) {
+        console.error(err)
+    }
+}
