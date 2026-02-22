@@ -156,7 +156,7 @@ window.addEventListener("load", async (ev) => {
             savebtn.addEventListener("click", async () => {
                 const newcontent = textarea.value
 
-                const response = await fetch(`/api/posts/${post_id}/edit`, {
+                const response = await fetch(`/api/posts/${post_id}`, {
                     method: "PUT",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content : newcontent })
@@ -375,7 +375,7 @@ async function owner() {
 
 async function deletePost(post_id) {
     try {
-        const result = await fetch(`/api/posts/${post_id}/delete`, { method: "DELETE" })
+        const result = await fetch(`/api/posts/${post_id}`, { method: "DELETE" })
 
         if (result.ok) {
             return document.getElementById(`post-${post_id}`).remove()
