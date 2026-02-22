@@ -123,11 +123,29 @@ export const CommentsAdd = async (req, res, next) => {
 export const CommentsDelete = async (req, res, next) => {
     try {
         const post_id = req.params.post
-        const user_id = req.params.user_id
+        const user_id = req.params.author_id
 
         const result = await apiServices.DeleteComment(post_id, user_id)
 
         res.json(result)
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+export const PostDelete = async (req, res, next) => {
+    try {
+        const post_id = req.params.post
+        const user_id = req.user.user_id
+
+        const result = await apiServices.DeletePost(post_id, user_id)
+
+        const { code, error } = result
+
+        if (error.length > 0)
+            return res.status(code).json(error)
+
+        return res.json(result)
     } catch (err) {
         console.error(err)
     }

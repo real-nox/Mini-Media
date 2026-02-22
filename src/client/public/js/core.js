@@ -112,12 +112,36 @@ window.addEventListener("load", async (ev) => {
             await loadmore(post_id)
         }
 
-        //Delete btn
-        if (ev.target.classList.contains("delete-btn")) {
+        //Delete Cmt btn
+        if (ev.target.classList.contains("delete-cmt-btn")) {
+            const post_id = ev.target.dataset.postId
+            const author_id = ev.target.dataset.authorId
             const comment_id = ev.target.dataset.commentId
-            await deletecmt(comment_id)
+
+            await deletecmt(comment_id, post_id, author_id)
         }
     })
+
+    document.querySelectorAll(".options-btn")
+        .forEach(opt_btn => opt_btn.addEventListener("click", (ev) => {
+            const post_id = opt_btn.dataset.id
+            const div = document.querySelector(`.post-menu[data-id='${post_id}']`)
+
+            if (div)
+                div.classList.toggle("hidden")
+        }))
+
+    document.querySelectorAll(".edit-btn")
+        .forEach(edit_btn => edit_btn.addEventListener("click", async (ev) => {
+            const post_id = delete_btn.dataset.id
+            await editPost(post_id)
+        }))
+
+    document.querySelectorAll(".delete-btn")
+        .forEach(delete_btn => delete_btn.addEventListener("click", async (ev) => {
+            const post_id = delete_btn.dataset.id
+            await deletePost(post_id)
+        }))
 
 })
 
@@ -142,19 +166,27 @@ async function showList(list) {
     listDiv.innerHTML = ""
 
     for (const element of list) {
-
         if (!element.username || element.username === "null") continue
+        console.log(element)
         div += `
-                <article>
+                <article id="post-${element.post_id}">
                     <div class="post">
                         <div class="user"> 
-                            <a href="/${element.username}"> ${element.username}</a>
+                            <a href="/${element.username}"> ${element.username}</a>`
+        if (element.user_id === currentOwner)
+            div += `<div class="post-actions">
+                        <button class="options-btn" data-id="${element.post_id}">⋮</button>
+                        <div class="post-menu hidden" data-id="${element.post_id}">
+                            <button class="edit-btn" data-id="${element.post_id}">Edit</button>
+                            <button class="delete-btn" data-id="${element.post_id}">Delete</button>
                         </div>
+                    </div>`
+        div += `</div>
                         <div class="content">
                             <p> ${element.p_content} </p>
                         </div>
                         <div class="bottomarticle">
-                            <span><button class="like-btn" data-post-id="${element.post_id}">Like ${element.likes}</button> </span>
+                            <span><button class="like-btn" data-post-id="${element.post_id}">Like ${element.likes}</button></span>
                             <span><button class="comments-btn" data-post-id="${element.post_id}">Comments</button></span>
                         </div>
                         <div id="comments-${element.post_id}" class="comments">
@@ -176,6 +208,16 @@ async function showList(list) {
 
     }
     listDiv.innerHTML = div
+}
+
+async function show_hideoption(post_id) {
+    try {
+        const optionsdiv = document.getElementsByClassName("post-menu")
+
+        optionsdiv.classList.toggle("hidden")
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 async function like_dislike(post_id) {
@@ -210,18 +252,19 @@ async function loadmore(post_id) {
         )
         const data = await resultat.json()
 
-        if (data.length < 5) return
-        if (data.length > 0)
-            cursor[post_id] = data[data.length - 1].created_at
+        const comments = data.cmt
+        if (comments.length < 5) return
+        if (comments.length > 0)
+            cursor[post_id] = comments[comments.length - 1].created_at
 
         let div = ''
-        for (const comment of data) {
+        for (const comment of comments) {
             div += `
                 <div id="comment-${comment.comment_id}">
                     <div><a href='/${comment.username}'>${comment.username}</a></div>
                     <div><p>${comment.p_content}</p></div>`
-            if (currentOwner === comment.p_comment_author_id)
-                div += `<div><button class="delete-btn" data-comment-id="${comment.comment_id}">Delete</button></div>`
+            if (currentOwner === comment.p_comment_author_id || data.owner == currentOwner)
+                div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`
             div += `</div>`
         }
         commentsDiv.innerHTML += div
@@ -243,18 +286,21 @@ async function show_hidecmt(post_id) {
         )
         const data = await resultat.json()
 
-        if (data.length > 0) {
-            cursor[post_id] = data[data.length - 1].created_at
+        console.log(data.cmt)
+        const comments = data.cmt
+
+        if (comments.length > 0) {
+            cursor[post_id] = comments[comments.length - 1].created_at
         }
 
         let div = ''
-        for (const comment of data) {
+        for (const comment of comments) {
             div += `
                 <div id="comment-${comment.comment_id}">
                     <div><a href='/${comment.username}'>${comment.username}</a></div>
                     <div><p>${comment.p_content}</p></div>`
-            if (currentOwner === comment.p_comment_author_id)
-                div += `<div><button class="delete-btn" data-comment-id="${comment.comment_id}">Delete</button></div>`
+            if (currentOwner === comment.p_comment_author_id || data.owner == currentOwner)
+                div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-comment-id="${comment.comment_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`
             div += `</div>`
         }
         commentsDiv.innerHTML = div
@@ -265,10 +311,11 @@ async function show_hidecmt(post_id) {
     }
 }
 
-async function deletecmt(comment_id) {
+async function deletecmt(comment_id, post_id, comment_author_id) {
     try {
-        const result = await fetch(`/api/comments/${comment_id}`, { method: "DELETE" })
+        const result = await fetch(`/api/comments/${post_id}/${comment_author_id}`, { method: "DELETE" })
 
+        console.log(comment_id)
         if (result.ok)
             return document.getElementById(`comment-${comment_id}`).remove()
     } catch (err) {
@@ -282,6 +329,30 @@ async function owner() {
         const data = await result.json()
 
         return data
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+async function editPost(post_id) {
+    try {
+        const result = await fetch(`/api/posts/${post_id}/edit`, {method: "PUT"})
+        
+        if (result.ok) {
+            return document.getElementById(`post-${post_id}`).remove()
+        }
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+async function deletePost(post_id) {
+    try {
+        const result = await fetch(`/api/posts/${post_id}/delete`, {method: "DELETE"})
+        
+        if (result.ok) {
+            return document.getElementById(`post-${post_id}`).remove()
+        }
     } catch (err) {
         console.error(err)
     }

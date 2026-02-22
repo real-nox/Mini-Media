@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { authU } from "../middlewares/sessions.js"
-import { CommentsAdd, CommentsDelete, CommentsGet, LikePost, modeApi, postsList } from "../controllers/api.controler.js"
+import { CommentsAdd, CommentsDelete, CommentsGet, LikePost, modeApi, PostDelete, postsList } from "../controllers/api.controler.js"
 
 const api = Router()
 
@@ -19,6 +19,8 @@ api.get("/api/user", authU, (req, res) => {
         return res.json(req.user.user_id)
 })
 
-api.delete("/api/comments/:comment_id", authU, CommentsDelete)
+api.delete("/api/comments/:post/:author_id", authU, CommentsDelete)
+
+api.delete("/api/posts/:post/delete", authU, PostDelete)
 
 export default api

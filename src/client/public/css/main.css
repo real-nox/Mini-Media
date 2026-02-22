@@ -44,3 +44,23 @@
     position: relative;
     transition: position 0.5s ease;
 }
+
+.post-menu {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    gap: 5px;
+    background-color: black;
+    padding: 20px 10px;
+    opacity: 1;
+    z-index: 1;
+    position: relative;
+    transition: opacity 0.5s ease;
+}
+
+.post-menu.hidden {
+    opacity: 0;
+    z-index: -999;
+    position: fixed;
+    transition: opacity 0.5s ease;
+}
