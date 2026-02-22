@@ -1,5 +1,5 @@
 import { hasIdUser } from "../repositories/login.repositories.js"
-import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, removeLike } from "../repositories/posts.repositories.js"
+import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -97,4 +97,29 @@ export const DeletePost = async (post_id, user_id) => {
         return { code: 503, error: ["Couldn't delete post!"] }
     else
         return { code: 200, error: [] }
+}
+
+export const UpdatePost = async (newcontent, post_id, user_id) => {
+
+    if (!newcontent.length)
+        return { success: false, code: 402, error: ["Empty content"] }
+
+    const foundpost = await getPost(post_id)
+
+    if (!foundpost)
+        return { success: false, code: 402, error: ["Unfound Post"] }
+
+    const findUser = await hasIdUser(user_id)
+
+    if (!findUser)
+        return { success: false, code: 402, error: ["Unfound User"] }
+
+    if (foundpost[0].post_owner_id !== user_id)
+        return { success: false, code: 403, error: ["Forbiden!"] }
+
+    const deleted = await putpost(newcontent, post_id, user_id)
+    if (!deleted)
+        return { success: false, code: 503, error: ["Couldn't delete post!"] }
+    else
+        return { success: true, code: 200, error: [] }
 }

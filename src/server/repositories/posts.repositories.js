@@ -96,3 +96,11 @@ export const delpost = async (post_id, user_id) => {
         return true
     return false
 }
+
+export const putpost = async (newcontent, post_id, user_id) => {
+    const result = await query("update posts set p_content = $1 where post_id = $2 and post_owner_id = $3", [newcontent, post_id, user_id])
+
+    if (result?.rowCount)
+        return true
+    return false
+}

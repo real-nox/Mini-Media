@@ -133,8 +133,47 @@ window.addEventListener("load", async (ev) => {
 
     document.querySelectorAll(".edit-btn")
         .forEach(edit_btn => edit_btn.addEventListener("click", async (ev) => {
-            const post_id = delete_btn.dataset.id
-            await editPost(post_id)
+            const post_id = edit_btn.dataset.id
+            const postDiv = edit_btn.parentElement.parentElement.parentElement.parentElement
+
+            const center = postDiv.querySelector(".content")
+            const content = center.querySelector("p").innerText
+
+            const textarea = document.createElement("textarea")
+            textarea.value = content
+            textarea.classList.add('edit-textarea')
+
+            const savebtn = document.createElement("button")
+            savebtn.textContent = "Save"
+            const cancelbtn = document.createElement("button")
+            cancelbtn.textContent = "Cancel"
+
+            center.innerHTML = ''
+            center.appendChild(textarea)
+            center.appendChild(savebtn)
+            center.appendChild(cancelbtn)
+
+            savebtn.addEventListener("click", async () => {
+                const newcontent = textarea.value
+
+                const response = await fetch(`/api/posts/${post_id}/edit`, {
+                    method: "PUT",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content : newcontent })
+                })
+
+                const result = await response.json();
+
+                if (result.success) {
+                    center.innerHTML = `<p class="post-body">${newcontent}</p>`;
+                } else {
+                    alert(result.error.join(', '));
+                }
+            })
+
+            cancelbtn.addEventListener('click', () => {
+                center.innerHTML = `<p class="post-body">${content}</p>`;
+            })
         }))
 
     document.querySelectorAll(".delete-btn")
@@ -334,22 +373,10 @@ async function owner() {
     }
 }
 
-async function editPost(post_id) {
-    try {
-        const result = await fetch(`/api/posts/${post_id}/edit`, {method: "PUT"})
-        
-        if (result.ok) {
-            return document.getElementById(`post-${post_id}`).remove()
-        }
-    } catch (err) {
-        console.error(err)
-    }
-}
-
 async function deletePost(post_id) {
     try {
-        const result = await fetch(`/api/posts/${post_id}/delete`, {method: "DELETE"})
-        
+        const result = await fetch(`/api/posts/${post_id}/delete`, { method: "DELETE" })
+
         if (result.ok) {
             return document.getElementById(`post-${post_id}`).remove()
         }

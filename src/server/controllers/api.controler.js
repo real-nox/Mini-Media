@@ -150,3 +150,22 @@ export const PostDelete = async (req, res, next) => {
         console.error(err)
     }
 }
+
+export const PostPut = async (req, res, next) => {
+    try {
+        const post_id = req.params.post
+        const user_id = req.user.user_id
+        const content = req.body.content
+
+        const result = await apiServices.UpdatePost(content, post_id, user_id)
+
+        const { success, code, error } = result
+
+        if (error.length > 0)
+            return res.status(code).json(error)
+
+        return res.json(result)
+    } catch (err) {
+        console.error(err)
+    }
+}
