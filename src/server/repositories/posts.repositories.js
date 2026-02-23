@@ -1,8 +1,7 @@
 import query from "../db/database.js"
 
-export const savePost = async (user_id, content) => {
-    console.log(user_id, content)
-    await query("insert into posts (post_owner_id, p_content) values ($1, $2)", [user_id, content])
+export const savePost = async (user_id, content, path) => {
+    await query("insert into posts (post_owner_id, p_content, post_img) values ($1, $2, $3)", [user_id, content, path])
 
     return true
 }

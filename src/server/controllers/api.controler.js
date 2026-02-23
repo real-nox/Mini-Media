@@ -159,3 +159,17 @@ export const PostPut = async (req, res, next) => {
 
     res.json(result)
 }
+
+export const generateURL = async (req, res, next) => {
+    const file = req.body
+    
+    if (!file)
+        throw new ErrorHandler("No file was provided!", 400)
+
+    const fileName = file.fileName
+    const type = file.type
+
+    const result = await apiServices.GenerateURLFile(fileName, type)
+
+    res.json(result)
+}

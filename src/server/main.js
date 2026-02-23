@@ -9,9 +9,9 @@ import userR from "./routers/user.js";
 import { modes } from "./middlewares/user_login.js";
 import api from "./routers/api.js";
 import postR from "./routers/posts.js";
+import sp from "./db/supabase.js";
 
 const app = express()
-
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use(express.json())
@@ -51,4 +51,5 @@ app.use((err, req, res, next) => {
         success: false,
         message: err.message || "Internal Server Error"
     })
+    next()
 })

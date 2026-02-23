@@ -1,6 +1,7 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
 import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
+import { URLGenerateFile } from "../repositories/supabase.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -66,7 +67,7 @@ export const AddComment = async (post_id, user_id, content) => {
 
     if (!isAdded)
         throw new ErrorHandler("Database request failed!", 500)
-    
+
     return findUser[0].username
 }
 
@@ -135,4 +136,15 @@ export const UpdatePost = async (newcontent, post_id, user_id) => {
         throw new ErrorHandler("Database request failed!", 500)
 
     return isUpdated
+}
+
+export const GenerateURLFile = async (fileName, type) => {
+    const PermitedTypes = ["image/jpeg", "image/webp", "image/png"]
+
+    if (!PermitedTypes.includes(type))
+        throw new ErrorHandler("Invalid type!", 500)
+
+    const result = await URLGenerateFile(fileName)
+    console.log(result)
+    return result
 }

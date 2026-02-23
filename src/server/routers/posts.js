@@ -5,6 +5,6 @@ import { modes } from "../middlewares/user_login.js"
 
 const postR = Router()
 
-postR.post("/create-post", modes, authU, postCreate)
+postR.post("/create-post", authU, modes, postCreate)
 
 export default postR

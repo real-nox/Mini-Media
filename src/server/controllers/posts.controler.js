@@ -4,8 +4,9 @@ export const postCreate = async (req, res, next) => {
     try {
         const user_id = req.user.user_id
         const content = req.body.content
+        const path = req.body.path
 
-        const result = await posts_service.createPost(user_id, content)
+        const result = await posts_service.createPost(user_id, content, path)
         const { success, error, typeErr } = result
 
         if (typeErr && typeErr === 5)

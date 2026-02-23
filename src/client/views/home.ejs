@@ -27,9 +27,11 @@
 
                 <button onclick="createpost()">Create post</button>
                 <div id="postC" class="postC hidden">
-                    <form action="/create-post" method="post">
+                    <form id="formPost">
                         <label for="content">Content</label>
                         <textarea name="content" id="content"></textarea>
+                        <label for="image">Image</label>
+                        <input type="file" name="image" id="image" accept="image/png, image/jpeg, image/webp" />
                         <button type="submit">Create</button>
                     </form>
                 </div>

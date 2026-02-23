@@ -159,7 +159,7 @@ window.addEventListener("load", async (ev) => {
                 const response = await fetch(`/api/posts/${post_id}`, {
                     method: "PUT",
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content : newcontent })
+                    body: JSON.stringify({ content: newcontent })
                 })
 
                 const result = await response.json();
@@ -182,7 +182,68 @@ window.addEventListener("load", async (ev) => {
             await deletePost(post_id)
         }))
 
+    document.getElementById("formPost")
+        .addEventListener("submit", async (ev) => {
+            ev.preventDefault()
+
+            const fileInput = document.getElementById("image")
+            const file = fileInput.files[0]
+
+            const content = document.getElementById("content")
+
+            if (file) {
+                if (!(file.size / 1024 / 1024 < 1))
+                    return alert("Large image!")
+                const { signedUrl, path } = await generateSignedUrl(file)
+
+                await uploadFile(signedUrl, file)
+
+                await Createpost(path, content)
+
+                content.innerText = ""
+                fileInput.innerHTML = ""
+                document.getElementById("postC").classList.toggle("hidden")
+            }
+        })
+
 })
+
+async function generateSignedUrl(file) {
+    try {
+        const result = await fetch("/api/files/upload", {
+            method: "POST",
+            body: JSON.stringify({
+                fileName: file.name,
+                type: file.type
+            }),
+            headers: { "Content-Type": "application/json" }
+        })
+
+        if (result.ok)
+            return await result.json()
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+async function uploadFile(signedUrl, file) {
+    return await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type }
+    })
+}
+
+async function Createpost(path, content) {
+    await fetch("/create-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            content: content.value,
+            path: path
+        })
+    })
+}
 
 async function getList() {
     try {
@@ -272,7 +333,7 @@ async function like_dislike(post_id) {
 
         if (data.success)
             likescontent.innerText = "Like " + (parseInt(likescontent.innerText.replace("Like ", "")) + data)
-        else 
+        else
             console.error(data.msg)
     } catch (err) {
         console.error(err)
@@ -353,9 +414,9 @@ async function show_hidecmt(post_id) {
 
 async function deletecmt(comment_id, post_id, comment_author_id) {
     try {
-        const result = await fetch(`/api/comments/${post_id}`, { 
+        const result = await fetch(`/api/comments/${post_id}`, {
             method: "DELETE",
-            body: JSON.stringify({author_id : comment_author_id})
+            body: JSON.stringify({ author_id: comment_author_id })
         })
 
         console.log(comment_id)
