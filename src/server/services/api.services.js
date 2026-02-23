@@ -1,28 +1,29 @@
+import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
 import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
 
 export const Lposts = async (limit) => {
 
-    if (typeof (parseFloat(limit)) !== "number")
-        return false
+    if (!limit || isNaN(Number(limit)))
+        throw new ErrorHandler("Limit isn't set as number", 404)
 
     const result = await listPosts(limit)
 
     if (!result)
-        return 0
+        throw new ErrorHandler("Post not found!", 404)
 
     return result
 }
 
 export const Like = async (liker, post_id) => {
 
-    if (!post_id && !liker)
-        return false
+    if (!post_id || !liker)
+        throw new ErrorHandler("Something unexpected happened!", 500)
 
     const findUser = await hasIdUser(liker)
 
     if (!findUser)
-        return false
+        throw new ErrorHandler("User not found!", 404)
 
     const hasLike = await get_like(post_id, liker)
 
@@ -33,93 +34,105 @@ export const Like = async (liker, post_id) => {
     else
         result = await addLike(post_id, liker)
 
-    if (!result)
-        return 0
-
     return result
 }
 
 export const Getcomments = async (post_id, limit, cursor) => {
     const foundpost = await getPost(post_id)
 
-    if (!foundpost)
-        return false
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
 
-    return { owner: foundpost[0].post_owner_id, cmt: await getcmt(post_id, limit, cursor) }
+    const comment = await getcmt(post_id, limit, cursor)
+
+    if (!comment)
+        throw new ErrorHandler("Comment not found!", 404)
+
+    return { owner: foundpost[0].post_owner_id, cmt: comment }
 }
 
 export const AddComment = async (post_id, user_id, content) => {
     const foundpost = await getPost(post_id)
 
-    if (!foundpost)
-        return false
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
 
     const findUser = await hasIdUser(user_id)
 
     if (!findUser)
-        return false
+        throw new ErrorHandler("User not found!", 404)
 
-    return { fct: await addcmt(post_id, user_id, content), user: findUser[0].username }
+    const isAdded = await addcmt(post_id, user_id, content)
+
+    if (!isAdded)
+        throw new ErrorHandler("Database request failed!", 500)
+    
+    return findUser[0].username
 }
 
 export const DeleteComment = async (post_id, user_id) => {
-
     const foundpost = await getPost(post_id)
 
-    if (!foundpost)
-        return false
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
 
     const findUser = await hasIdUser(user_id)
 
     if (!findUser)
-        return false
+        throw new ErrorHandler("User not found!", 404)
 
-    return await delcmt(post_id, user_id)
+    const isDeleted = await delcmt(post_id, user_id)
+
+    if (!isDeleted)
+        throw new ErrorHandler("Database request failed!", 500)
+
+    return isDeleted
 }
 
 export const DeletePost = async (post_id, user_id) => {
 
     const foundpost = await getPost(post_id)
 
-    if (!foundpost)
-        return { code: 402, error: ["Unfound Post"] }
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
 
     const findUser = await hasIdUser(user_id)
 
     if (!findUser)
-        return { code: 402, error: ["Unfound User"] }
+        throw new ErrorHandler("User not found!", 404)
 
-    if (foundpost[0].post_owner_id !== user_id)
-        return { code: 403, error: ["Forbiden!"] }
+    if (foundpost && foundpost.length > 0)
+        if (foundpost[0].post_owner_id !== user_id)
+            throw new ErrorHandler("Unauthorized request!", 403)
 
-    const deleted = await delpost(post_id, user_id)
-    if (!deleted)
-        return { code: 503, error: ["Couldn't delete post!"] }
-    else
-        return { code: 200, error: [] }
+    const isDeleted = await delpost(post_id, user_id)
+
+    if (!isDeleted)
+        throw new ErrorHandler("Database request failed!", 500)
+
+    return isDeleted
 }
 
 export const UpdatePost = async (newcontent, post_id, user_id) => {
 
-    if (!newcontent.length)
-        return { success: false, code: 402, error: ["Empty content"] }
-
     const foundpost = await getPost(post_id)
 
-    if (!foundpost)
-        return { success: false, code: 402, error: ["Unfound Post"] }
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
 
     const findUser = await hasIdUser(user_id)
 
     if (!findUser)
-        return { success: false, code: 402, error: ["Unfound User"] }
+        throw new ErrorHandler("User not found!", 404)
 
-    if (foundpost[0].post_owner_id !== user_id)
-        return { success: false, code: 403, error: ["Forbiden!"] }
+    if (foundpost && foundpost.length > 0)
+        if (foundpost[0].post_owner_id !== user_id)
+            throw new ErrorHandler("Unauthorized request!", 403)
 
-    const deleted = await putpost(newcontent, post_id, user_id)
-    if (!deleted)
-        return { success: false, code: 503, error: ["Couldn't delete post!"] }
-    else
-        return { success: true, code: 200, error: [] }
+    const isUpdated = await putpost(newcontent, post_id, user_id)
+
+    if (!isUpdated)
+        throw new ErrorHandler("Database request failed!", 500)
+
+    return isUpdated
 }

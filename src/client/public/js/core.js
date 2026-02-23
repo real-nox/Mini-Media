@@ -270,9 +270,10 @@ async function like_dislike(post_id) {
         )
         const data = await resultat.json()
 
-        likescontent.innerText = "Like " + (parseInt(likescontent.innerText.replace("Like ", "")) + data)
-
-        return data
+        if (data.success)
+            likescontent.innerText = "Like " + (parseInt(likescontent.innerText.replace("Like ", "")) + data)
+        else 
+            console.error(data.msg)
     } catch (err) {
         console.error(err)
     }
@@ -352,7 +353,10 @@ async function show_hidecmt(post_id) {
 
 async function deletecmt(comment_id, post_id, comment_author_id) {
     try {
-        const result = await fetch(`/api/comments/${post_id}/${comment_author_id}`, { method: "DELETE" })
+        const result = await fetch(`/api/comments/${post_id}`, { 
+            method: "DELETE",
+            body: JSON.stringify({author_id : comment_author_id})
+        })
 
         console.log(comment_id)
         if (result.ok)
