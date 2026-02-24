@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { authU } from "../middlewares/sessions.js"
-import { CommentsAdd, CommentsDelete, CommentsGet, generateURL, getURL, LikePost, modeApi, PostDelete, PostPut, postsList } from "../controllers/api.controler.js"
+import { CommentsAdd, CommentsDelete, CommentsGet, generateURL, getURL, LikePost, modeApi, postsList } from "../controllers/api.controler.js"
 import { authRate, commentsRate, postsRate } from "../middlewares/rate-limit.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"
 
@@ -23,10 +23,6 @@ api.get("/api/user", (req, res) => {
 })
 
 api.delete("/api/comments/:post", commentsRate, asyncHandler(CommentsDelete))
-
-api.delete("/api/posts/:post", postsRate, asyncHandler(PostDelete))
-
-api.put("/api/posts/:post", postsRate, asyncHandler(PostPut))
 
 api.post("/api/files/upload", postsRate, asyncHandler(generateURL))
 

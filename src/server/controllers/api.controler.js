@@ -24,7 +24,7 @@ export const modeApi = (req, res, next) => {
         })
     }
 
-    res.json(mode)
+    return res.json(mode)
 }
 
 export const getmodeApi = (req, res, next) => {
@@ -36,7 +36,7 @@ export const getmodeApi = (req, res, next) => {
     if (req.cookies.ssmodes && req.cookies.ssmodes === "dark")
         mode = "dark"
 
-    res.json(mode)
+    return res.json(mode)
 }
 
 export const postsList = async (req, res, next) => {
@@ -50,7 +50,7 @@ export const postsList = async (req, res, next) => {
     if (!list)
         throw new ErrorHandler("Infound posts", 500)
 
-    res.json(list)
+    return res.json(list)
 }
 
 export const postLikes = async (req, res, next) => {
@@ -64,7 +64,7 @@ export const postLikes = async (req, res, next) => {
     if (!likes)
         throw new ErrorHandler("Infound likes", 500)
 
-    res.json(likes)
+    return res.json(likes)
 }
 
 export const postOwner = async (req, res, next) => {
@@ -78,7 +78,7 @@ export const postOwner = async (req, res, next) => {
     if (!owner)
         throw new ErrorHandler("Infound owner", 500)
 
-    res.json(owner)
+    return res.json(owner)
 }
 
 export const LikePost = async (req, res, next) => {
@@ -90,7 +90,7 @@ export const LikePost = async (req, res, next) => {
 
     const result = await apiServices.Like(liker, post_id)
 
-    res.json(result)
+    return  res.json(result)
 }
 
 export const CommentsGet = async (req, res, next) => {
@@ -103,7 +103,7 @@ export const CommentsGet = async (req, res, next) => {
 
     const result = await apiServices.Getcomments(post_id, limit, cursor)
 
-    res.json(result)
+    return res.json(result)
 }
 
 export const CommentsAdd = async (req, res, next) => {
@@ -116,7 +116,7 @@ export const CommentsAdd = async (req, res, next) => {
 
     const result = await apiServices.AddComment(post_id, user_id, content)
 
-    res.json({ post_id, user_id, content, result })
+    return res.json({ post_id, user_id, content, result })
 }
 
 export const CommentsDelete = async (req, res, next) => {
@@ -129,35 +129,7 @@ export const CommentsDelete = async (req, res, next) => {
 
     const result = await apiServices.DeleteComment(post_id, user_id)
 
-    res.json(result)
-}
-
-export const PostDelete = async (req, res, next) => {
-    const post_id = req.params.post
-    const user_id = req.user.user_id
-
-    if (!post_id || !user_id)
-        throw new ErrorHandler("Inspecified post_id/user_id", 400)
-
-    const result = await apiServices.DeletePost(post_id, user_id)
-
     return res.json(result)
-}
-
-export const PostPut = async (req, res, next) => {
-    const post_id = req.params.post
-    const user_id = req.user.user_id
-    const content = req.body.content
-
-    if (!post_id || !user_id || !content)
-        throw new ErrorHandler("Inspecified post_id/user_id/content", 400)
-
-    if (!content.length)
-        throw new ErrorHandler("Content is too short", 400)
-
-    const result = await apiServices.UpdatePost(content, post_id, user_id)
-
-    res.json(result)
 }
 
 export const generateURL = async (req, res, next) => {
@@ -170,7 +142,7 @@ export const generateURL = async (req, res, next) => {
 
     const result = await apiServices.GenerateURLFile(type)
 
-    res.json(result)
+    return res.json(result)
 }
 
 export const getURL = async (req, res, next) => {
@@ -181,5 +153,5 @@ export const getURL = async (req, res, next) => {
 
     const result = await apiServices.GetPublicURL(path)
 
-    res.json(result)
+    return res.json(result)
 }

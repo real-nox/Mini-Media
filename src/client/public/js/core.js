@@ -157,7 +157,7 @@ window.addEventListener("load", async (ev) => {
             savebtn.addEventListener("click", async () => {
                 const newcontent = textarea.value
 
-                const response = await fetch(`/api/posts/${post_id}`, {
+                const response = await fetch(`/posts/${post_id}`, {
                     method: "PUT",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content: newcontent })
@@ -255,7 +255,7 @@ async function uploadFile(signedUrl, file, path) {
 }
 
 async function Createpost(url, path, content) {
-    await fetch("/create-post", {
+    await fetch("/posts/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -461,7 +461,7 @@ async function owner() {
 
 async function deletePost(post_id) {
     try {
-        const result = await fetch(`/api/posts/${post_id}`, { method: "DELETE" })
+        const result = await fetch(`/posts/${post_id}`, { method: "DELETE" })
 
         if (result.ok) {
             return document.getElementById(`post-${post_id}`).remove()
