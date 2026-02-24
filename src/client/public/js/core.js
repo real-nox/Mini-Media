@@ -242,11 +242,14 @@ async function GetPublicURL(path) {
 
 async function uploadFile(signedUrl, file, path) {
     console.log(signedUrl, path)
-    await fetch(signedUrl, {
+    console.log(file.type)
+    const result = await fetch(signedUrl, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type }
     })
+
+    console.log(await result.text())
 
     return GetPublicURL(path)
 }

@@ -13,8 +13,9 @@ export const postCreate = async (req, res, next) => {
         if (typeErr && typeErr === 5)
             return res.status(503).send(error)
 
+        const mode = req.mode
         if (error && typeErr)
-            return res.render("home", { error })
+            return res.render("home", { error, mode })
 
         if (success)
             return res.redirect("/")
