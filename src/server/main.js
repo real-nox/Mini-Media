@@ -31,6 +31,7 @@ app.use(postR)
 app.get("/", modes, authS, (req, res) => {
     const user = req.user
     const mode = req.mode
+
     return res.render("home", { user, mode })
 })
 

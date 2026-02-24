@@ -166,10 +166,9 @@ export const generateURL = async (req, res, next) => {
     if (!file)
         throw new ErrorHandler("No file was provided!", 400)
 
-    const fileName = file.fileName
     const type = file.type
 
-    const result = await apiServices.GenerateURLFile(fileName, type)
+    const result = await apiServices.GenerateURLFile(type)
 
     res.json(result)
 }

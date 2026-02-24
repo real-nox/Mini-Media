@@ -6,29 +6,30 @@ import { asyncHandler } from "../middlewares/errorsHandler.js"
 
 const api = Router()
 
+api.use(authU)
 api.post("/api/modes/toggle", authRate, modeApi)
 
-api.get("/api/posts", authU, asyncHandler(postsList))
+api.get("/api/posts", asyncHandler(postsList))
 
-api.post("/api/post/:post/like", authU, modeApi, asyncHandler(LikePost))
+api.post("/api/post/:post/like", modeApi, asyncHandler(LikePost))
 
-api.get("/api/post/:post/comments", authU, asyncHandler(CommentsGet))
+api.get("/api/post/:post/comments", asyncHandler(CommentsGet))
 
-api.post("/api/post/:post/comments", commentsRate, authU, modeApi, asyncHandler(CommentsAdd))
+api.post("/api/post/:post/comments", commentsRate, modeApi, asyncHandler(CommentsAdd))
 
-api.get("/api/user", authU, (req, res) => {
+api.get("/api/user", (req, res) => {
     if (req.user)
         return res.json(req.user.user_id)
 })
 
-api.delete("/api/comments/:post", commentsRate, authU, asyncHandler(CommentsDelete))
+api.delete("/api/comments/:post", commentsRate, asyncHandler(CommentsDelete))
 
-api.delete("/api/posts/:post", postsRate, authU, asyncHandler(PostDelete))
+api.delete("/api/posts/:post", postsRate, asyncHandler(PostDelete))
 
-api.put("/api/posts/:post", postsRate, authU, asyncHandler(PostPut))
+api.put("/api/posts/:post", postsRate, asyncHandler(PostPut))
 
-api.post("/api/files/upload", authU, postsRate, asyncHandler(generateURL))
+api.post("/api/files/upload", postsRate, asyncHandler(generateURL))
 
-api.post("/api/file/URL", authU, asyncHandler(getURL))
+api.post("/api/file/URL", asyncHandler(getURL))
 
 export default api

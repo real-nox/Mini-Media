@@ -1,7 +1,7 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
 import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
-import { FetchURLFile, URLGenerateFile } from "../repositories/supabase.repositories.js"
+import { delFile, FetchURLFile, URLGenerateFile } from "../repositories/supabase.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -106,6 +106,9 @@ export const DeletePost = async (post_id, user_id) => {
         if (foundpost[0].post_owner_id !== user_id)
             throw new ErrorHandler("Unauthorized request!", 403)
 
+    if (foundpost[0].post_path && foundpost[0].post_img)
+        await delFile(foundpost[0].post_path)
+
     const isDeleted = await delpost(post_id, user_id)
 
     if (!isDeleted)
@@ -138,14 +141,13 @@ export const UpdatePost = async (newcontent, post_id, user_id) => {
     return isUpdated
 }
 
-export const GenerateURLFile = async (fileName, type) => {
+export const GenerateURLFile = async (type) => {
     const PermitedTypes = ["image/jpeg", "image/webp", "image/png"]
 
     if (!PermitedTypes.includes(type))
         throw new ErrorHandler("Invalid type!", 500)
 
-    const result = await URLGenerateFile(fileName)
-    console.log(result)
+    const result = await URLGenerateFile(type)
     return result
 }
 
