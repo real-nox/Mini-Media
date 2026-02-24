@@ -82,6 +82,7 @@ window.addEventListener("load", async (ev) => {
                                 <div><p>${data.content}</p>
                             </div>`
 
+
                         commentsdiv.append(divcomment)
 
                         textarea.value = ''
@@ -194,11 +195,13 @@ window.addEventListener("load", async (ev) => {
             if (file) {
                 if (!(file.size / 1024 / 1024 < 1))
                     return alert("Large image!")
+
                 const { signedUrl, path } = await generateSignedUrl(file)
 
-                await uploadFile(signedUrl, file)
+                const result = await uploadFile(signedUrl, file, path)
 
-                await Createpost(path, content)
+                console.log(result)
+                await Createpost(result.publicUrl, path, content)
 
                 content.innerText = ""
                 fileInput.innerHTML = ""
@@ -210,6 +213,7 @@ window.addEventListener("load", async (ev) => {
 
 async function generateSignedUrl(file) {
     try {
+        console.log(file.name, file.type)
         const result = await fetch("/api/files/upload", {
             method: "POST",
             body: JSON.stringify({
@@ -226,20 +230,34 @@ async function generateSignedUrl(file) {
     }
 }
 
-async function uploadFile(signedUrl, file) {
-    return await fetch(signedUrl, {
+async function GetPublicURL(path) {
+    const result = await fetch("/api/file/URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({path : path})
+    })
+
+    return result.json()
+}
+
+async function uploadFile(signedUrl, file, path) {
+    console.log(signedUrl, path)
+    await fetch(signedUrl, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type }
     })
+
+    return GetPublicURL(path)
 }
 
-async function Createpost(path, content) {
+async function Createpost(url, path, content) {
     await fetch("/create-post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             content: content.value,
+            url: url,
             path: path
         })
     })
@@ -267,7 +285,6 @@ async function showList(list) {
 
     for (const element of list) {
         if (!element.username || element.username === "null") continue
-        console.log(element)
         div += `
                 <article id="post-${element.post_id}">
                     <div class="post">
@@ -282,8 +299,11 @@ async function showList(list) {
                         </div>
                     </div>`
         div += `</div>
-                        <div class="content">
-                            <p> ${element.p_content} </p>
+                        <div class="content">`
+                        console.log(element)
+        if (element.post_img)
+            div += `<img src="${element.post_img}" alt="image">`
+        div += `<p> ${element.p_content} </p>
                         </div>
                         <div class="bottomarticle">
                             <span><button class="like-btn" data-post-id="${element.post_id}">Like ${element.likes}</button></span>
@@ -387,7 +407,6 @@ async function show_hidecmt(post_id) {
         )
         const data = await resultat.json()
 
-        console.log(data.cmt)
         const comments = data.cmt
 
         if (comments.length > 0) {
@@ -419,7 +438,6 @@ async function deletecmt(comment_id, post_id, comment_author_id) {
             body: JSON.stringify({ author_id: comment_author_id })
         })
 
-        console.log(comment_id)
         if (result.ok)
             return document.getElementById(`comment-${comment_id}`).remove()
     } catch (err) {

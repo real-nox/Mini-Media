@@ -1,7 +1,7 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
 import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
-import { URLGenerateFile } from "../repositories/supabase.repositories.js"
+import { FetchURLFile, URLGenerateFile } from "../repositories/supabase.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -146,5 +146,11 @@ export const GenerateURLFile = async (fileName, type) => {
 
     const result = await URLGenerateFile(fileName)
     console.log(result)
+    return result
+}
+
+export const GetPublicURL = async (path) => {
+    const result = FetchURLFile(path)
+
     return result
 }

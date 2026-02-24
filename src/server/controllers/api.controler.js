@@ -173,3 +173,14 @@ export const generateURL = async (req, res, next) => {
 
     res.json(result)
 }
+
+export const getURL = async (req, res, next) => {
+    const path = req.body?.path
+
+    if (!path)
+        throw new ErrorHandler("No path was provided!", 400)
+
+    const result = await apiServices.GetPublicURL(path)
+
+    res.json(result)
+}

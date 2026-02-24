@@ -64,3 +64,10 @@
     position: fixed;
     transition: opacity 0.5s ease;
 }
+
+.posts {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

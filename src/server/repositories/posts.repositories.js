@@ -1,13 +1,14 @@
 import query from "../db/database.js"
 
-export const savePost = async (user_id, content, path) => {
-    await query("insert into posts (post_owner_id, p_content, post_img) values ($1, $2, $3)", [user_id, content, path])
+export const savePost = async (user_id, content, path, url) => {
+    await query("insert into posts (post_owner_id, p_content, post_img, post_path) values ($1, $2, $3, $4)", [user_id, content, url, path])
 
     return true
 }
 
 export const listPosts = async (limit) => {
-    const result = await query(`select p.post_id,p.p_content,p.created_at,u.username,count(l.post_id) as likes, u.user_id
+    const result = await query(`
+        select p.post_id,p.p_content,p.created_at,u.username,count(l.post_id) as likes, u.user_id, p.post_img
         from posts p join users u on p.post_owner_id = u.user_id
         left join likes l on l.post_id = p.post_id
         group by p.post_id, u.user_id
