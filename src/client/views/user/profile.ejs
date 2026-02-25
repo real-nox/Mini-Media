@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Social Media | <%=user.username%></title>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
+
 <body>
-    <a href="/">Home</a>
-    <p>Hi<%=user.username%></p>
+    <div id="maincontainer" class="maincontainer <%= mode %>">
+        <a href="/">Home</a>
+        <p>Hi<%=user.username%>
+        </p>
+    </div>
 
     <script src="/js/perm.js"></script>
 </body>
+
 </html>

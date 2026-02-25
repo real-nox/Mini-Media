@@ -108,15 +108,15 @@ export const CommentsGet = async (req, res, next) => {
 
 export const CommentsAdd = async (req, res, next) => {
     const post_id = req.params.post
-    const user_id = req.user.user_id
+    const user = req.user
     const content = req.body.content
 
-    if (!post_id || !user_id || !content)
+    if (!post_id || !user || !content)
         throw new ErrorHandler("Inspecified post_id/user_id/content", 400)
 
-    const result = await apiServices.AddComment(post_id, user_id, content)
+    const result = await apiServices.AddComment(post_id, user.user_id, content)
 
-    return res.json({ post_id, user_id, content, result })
+    return res.json({ post_id, user: user, content, result })
 }
 
 export const CommentsDelete = async (req, res, next) => {
