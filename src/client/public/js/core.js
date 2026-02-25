@@ -52,8 +52,8 @@ window.addEventListener("load", async (ev) => {
                     const commentsdiv = form.closest(".comments")
                     const divcomment = document.createElement("div")
 
-                    divcomment.innerHTML = `<div id="comment-${data.user}-${data.post_id}">
-                                <div><a href='/${data.user}'>${data.user}</a></div>
+                    divcomment.innerHTML = `<div id="comment-${data.user.user_id}-${data.post_id}">
+                                <div><a href='/${data.user.username}'>${data.user.username}</a></div>
                                 <div><p>${data.content}</p>
                             </div>`
 
