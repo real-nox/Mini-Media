@@ -21,8 +21,8 @@
                 <a href="/logout">Logout</a>
                 <a href="/<%= user.username %>">Profile</a>
 
-                <button id="modesBTN" onclick="toggleMode()">
-                    <% if(mode==="dark" ) {%> Dark Mode <% } else {%> Light Mode <%}%>
+                <button id="modesBTN" style="cursor: pointer;">
+                        <% if(mode[0] ==="dark" ) {%> Light Mode <% } else {%> Dark Mode <%}%>
                 </button>
 
                 <button onclick="createpost()">Create post</button>

@@ -10,15 +10,15 @@ export const postCreate = async (req, res, next) => {
     if (!user_id)
         throw new ErrorHandler("Unspecified user", 400)
 
-    if (!content?.trim())
+    if (!url && !content?.trim())
         throw new ErrorHandler("Unspecified content", 400)
 
     if ((!path && url) || (path && !url))
         throw new ErrorHandler("Unspecified file", 400)
 
-    await posts_service.createPost(user_id, content, path, url)
+    const result = await posts_service.createPost(user_id, content, path, url)
 
-    return res.redirect("/")
+    return res.json(result)
 }
 
 export const PostDelete = async (req, res, next) => {

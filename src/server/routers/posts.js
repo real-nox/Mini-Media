@@ -7,10 +7,13 @@ import { asyncHandler } from "../middlewares/errorsHandler.js"
 
 const postR = Router()
 
-postR.post("/posts/create", authU, modes, asyncHandler(postCreate))
+postR.use(authU)
+postR.use(postsRate)
 
-postR.delete("/posts/:post", postsRate, asyncHandler(PostDelete))
+postR.post("/posts/create", modes, asyncHandler(postCreate))
 
-postR.put("/posts/:post", postsRate, asyncHandler(PostPut))
+postR.delete("/posts/:post", asyncHandler(PostDelete))
+
+postR.put("/posts/:post", asyncHandler(PostPut))
 
 export default postR
