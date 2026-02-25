@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { authU } from "../middlewares/sessions.js"
-import { CommentsAdd, CommentsDelete, CommentsGet, generateURL, getURL, LikePost, modeApi, PostDelete, PostPut, postsList } from "../controllers/api.controler.js"
-import { authRate, commentsRate, postsRate } from "../middlewares/rate-limit.js"
+import { CommentsAdd, CommentsDelete, CommentsGet, generateURL, getURL, LikePost, modeApi, postsList } from "../controllers/api.controler.js"
+import { authRate, commentsRate, likesRate, postsRate } from "../middlewares/rate-limit.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"
 
 const api = Router()
@@ -11,11 +11,11 @@ api.post("/api/modes/toggle", authRate, modeApi)
 
 api.get("/api/posts", asyncHandler(postsList))
 
-api.post("/api/post/:post/like", modeApi, asyncHandler(LikePost))
+api.post("/api/post/:post/like", likesRate, asyncHandler(LikePost))
 
 api.get("/api/post/:post/comments", asyncHandler(CommentsGet))
 
-api.post("/api/post/:post/comments", commentsRate, modeApi, asyncHandler(CommentsAdd))
+api.post("/api/post/:post/comments", commentsRate, asyncHandler(CommentsAdd))
 
 api.get("/api/user", (req, res) => {
     if (req.user)
@@ -23,10 +23,6 @@ api.get("/api/user", (req, res) => {
 })
 
 api.delete("/api/comments/:post", commentsRate, asyncHandler(CommentsDelete))
-
-api.delete("/api/posts/:post", postsRate, asyncHandler(PostDelete))
-
-api.put("/api/posts/:post", postsRate, asyncHandler(PostPut))
 
 api.post("/api/files/upload", postsRate, asyncHandler(generateURL))
 
