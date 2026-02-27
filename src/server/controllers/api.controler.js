@@ -90,7 +90,7 @@ export const LikePost = async (req, res, next) => {
 
     const result = await apiServices.Like(liker, post_id)
 
-    return  res.json(result)
+    return res.json(result)
 }
 
 export const CommentsGet = async (req, res, next) => {
@@ -134,13 +134,18 @@ export const CommentsDelete = async (req, res, next) => {
 
 export const generateURL = async (req, res, next) => {
     const file = req.body
-    
+
     if (!file)
         throw new ErrorHandler("No file was provided!", 400)
 
-    const type = file.type
+    const type = file?.type
+    const path = file?.path
 
-    const result = await apiServices.GenerateURLFile(type)
+    console.log(type, path)
+    if (!type && !path)
+        throw new ErrorHandler("No file was provided!", 400)
+
+    const result = await apiServices.GenerateURLFile(type, path)
 
     return res.json(result)
 }
@@ -151,7 +156,13 @@ export const getURL = async (req, res, next) => {
     if (!path)
         throw new ErrorHandler("No path was provided!", 400)
 
-    const result = await apiServices.GetPublicURL(path)
+    const folder = req.body?.folder
+
+    if (!folder)
+        throw new ErrorHandler("No folder was provided!", 400)
+
+
+    const result = await apiServices.GetPublicURL(path, folder)
 
     return res.json(result)
 }

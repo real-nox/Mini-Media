@@ -4,7 +4,6 @@ export const hasUsername = async (username) => {
     try {
         const result = await query("select * from users where username = $1", [username])
 
-
         if (!result?.rows.length)
             return false
 

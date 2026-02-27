@@ -1,3 +1,4 @@
+import ErrorHandler from "../middlewares/errorsHandler.js"
 import * as userService from "../services/user.service.js"
 
 export const User = async (req, res, next) => {
@@ -11,6 +12,15 @@ export const User = async (req, res, next) => {
 
     if (!result)
         return res.status(404).send("Unfound page")
-    
-    return res.render("user/profile", { user: result, mode: mode })
+
+    return res.render("user/profile", { user: result[0], mode: mode })
+}
+
+export const UpdateUser = async (req, res, next) => {
+    const userInfo = req.body?.userInfo
+
+    if (!userInfo)
+        throw new ErrorHandler("Unfound user info", 400)
+
+    await userService.updateUser(userInfo)
 }

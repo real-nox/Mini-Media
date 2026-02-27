@@ -1,10 +1,10 @@
 import sp from "../db/supabase.js"
 import ErrorHandler from "../middlewares/errorsHandler.js"
 
-export const URLGenerateFile = async (type) => {
+export const URLGenerateFile = async (type, path = "PostsImg") => {
     const filename = `${crypto.randomUUID()}.${(type.split("/"))[1]}`
 
-    const { data, error } = await sp.storage.from("PostsImg")
+    const { data, error } = await sp.storage.from(path)
         .createSignedUploadUrl(filename)
 
     if (error) {
@@ -19,8 +19,8 @@ export const URLGenerateFile = async (type) => {
     return data
 }
 
-export const FetchURLFile = async (path) => {
-    const { data } = sp.storage.from("PostsImg").getPublicUrl(path)
+export const FetchURLFile = async (path, folder) => {
+    const { data } = sp.storage.from(folder).getPublicUrl(path)
 
     if (!data)
         throw new ErrorHandler("Couldn't find URL", 500)

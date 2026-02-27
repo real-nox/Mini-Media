@@ -4,18 +4,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Social Media | <%=user.username%></title>
+    <title>Mini Social Media | <%=user.username%>
+    </title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/profile.css">
 </head>
 
 <body>
     <div id="maincontainer" class="maincontainer <%= mode %>">
-        <a href="/">Home</a>
-        <p>Hi<%=user.username%>
-        </p>
+        <div class="topbar">
+            <a href="/">Home</a>
+            <p>Hi<%=user.username%>
+            </p>
+        </div>
+        <div class="center">
+            <div class="top">
+                <div class="imagepart">
+                    <img src="<%= user.avatar ? user.avatar : " img/user.png" %>" alt="" width="150">
+                </div>
+                <div class="edit">
+                    <button id="edit-profile" data-id="<%= user.user_id %>">Edit</button>
+                </div>
+            </div>
+
+            <div class="infopart">
+                <h4>
+                    <%= user.nickname %>
+                </h4>
+                <p>@<%= user.username %>
+                </p>
+                <p>
+                    <%= user.bio ? user.bio : "Pas de bio" %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="editProfile" class="editProfile hide" style="display: flex; justify-content: center; padding-top: 50px;">
+        <div class="folder" style="width: 80%; display: flex; flex-direction: column;">
+            <form id="form" data-id="<%= user.user_id %>" style="display: flex; flex-direction: column; gap: 10px ">
+                <p>Avatar</p>
+                <label for="avatar" style="cursor: pointer;">
+                    <img id="imageholder" src="<%= user.avatar ? user.avatar : " img/user.png" %>"
+                    width="150">
+                    <input type="file" name="avatar" id="avatar" style="display: none;">
+                </label>
+                <button id="removeavatar" class="removeavatar hide" type="button">Remove</button>
+
+                <label for="nickname">Nickname</label>
+                <input type="text" name="nickname" id="nickname" value="<%= user.nickname %>">
+
+                <label for="Bio">Bio</label>
+                <textarea name="bio" id="bio" style="resize: vertical;" value="<%= user.bio ? user.bio : "Pas de bio" %>"></textarea>
+
+                <label for="gmail">Email</label>
+                <input type="text" name="gmail" id="gmail" value="<%= user.email %>">
+
+                <button type="submit">Edit</button>
+            </form>
+        </div>
     </div>
 
     <script src="/js/perm.js"></script>
+    <script src="/js/profile.js"></script>
 </body>
 
 </html>
