@@ -19,8 +19,8 @@ export const URLGenerateFile = async (type, path = "PostsImg") => {
     return data
 }
 
-export const FetchURLFile = async (path) => {
-    const { data } = sp.storage.from("PostsImg").getPublicUrl(path)
+export const FetchURLFile = async (path, folder) => {
+    const { data } = sp.storage.from(folder).getPublicUrl(path)
 
     if (!data)
         throw new ErrorHandler("Couldn't find URL", 500)

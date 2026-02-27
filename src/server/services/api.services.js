@@ -90,18 +90,18 @@ export const DeleteComment = async (post_id, user_id) => {
     return isDeleted
 }
 
-export const GenerateURLFile = async (type) => {
+export const GenerateURLFile = async (type, path) => {
     const PermitedTypes = ["image/jpeg", "image/webp", "image/png"]
 
     if (!PermitedTypes.includes(type))
         throw new ErrorHandler("Invalid type!", 500)
 
-    const result = await URLGenerateFile(type)
+    const result = await URLGenerateFile(type, path)
     return result
 }
 
-export const GetPublicURL = async (path) => {
-    const result = FetchURLFile(path)
+export const GetPublicURL = async (path, folder) => {
+    const result = FetchURLFile(path, folder)
 
     return result
 }

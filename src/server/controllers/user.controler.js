@@ -16,16 +16,11 @@ export const User = async (req, res, next) => {
     return res.render("user/profile", { user: result[0], mode: mode })
 }
 
-export const PublicAvatarURL = async (req, res, next) => {
-    const filetype = req.body?.filetype
-
-    if (!filetype)
-        throw new ErrorHandler("Unfound type", 400)
-
-    const result = await userService.GeneratePublicURL(filetype)
-    return result
-}
-
 export const UpdateUser = async (req, res, next) => {
+    const userInfo = req.body?.userInfo
 
+    if (!userInfo)
+        throw new ErrorHandler("Unfound user info", 400)
+
+    await userService.updateUser(userInfo)
 }

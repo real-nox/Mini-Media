@@ -227,7 +227,8 @@ async function generateSignedUrl(file) {
             method: "POST",
             body: JSON.stringify({
                 fileName: file.name,
-                type: file.type
+                type: file.type,
+                path: "PostsImg"
             }),
             headers: { "Content-Type": "application/json" }
         })
@@ -243,7 +244,7 @@ async function GetPublicURL(path) {
     const result = await fetch("/api/file/URL", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: path })
+        body: JSON.stringify({ path: path, folder: "PostsImg" })
     })
 
     return result.json()

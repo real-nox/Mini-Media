@@ -1,6 +1,6 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
-import { hasUsername } from "../repositories/login.repositories.js"
-import { URLGenerateFile } from "../repositories/supabase.repositories.js"
+import { hasIdUser, hasUsername } from "../repositories/login.repositories.js"
+import { UpdateUser } from "../repositories/user.repositories.js"
 
 export const LoadUser = async (user) => {
     const result = await hasUsername(user)
@@ -10,14 +10,11 @@ export const LoadUser = async (user) => {
     return result
 }
 
-export const GeneratePublicURL = async (filetype) => {
-    const allowedTypes = ["image/png", "image/jpeg", "image/webp"]
+export const updateUser = async (info) => {
+    const isUser = await hasIdUser(info.user_id)
 
-    if (!allowedTypes.includes(filetype))
-        throw new ErrorHandler("Unsupported type!", 400)
+    if (!isUser)
+        throw new ErrorHandler("Unfound user", 500)
 
-    const resultat = await URLGenerateFile(filetype, "UserAvatar")
-
-    console.log(resultat)
-    return resultat
+    return await UpdateUser(info)
 }
