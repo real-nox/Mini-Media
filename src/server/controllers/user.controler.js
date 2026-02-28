@@ -22,5 +22,5 @@ export const UpdateUser = async (req, res, next) => {
     if (!userInfo)
         throw new ErrorHandler("Unfound user info", 400)
 
-    await userService.updateUser(userInfo)
+    return await userService.updateUser(userInfo)
 }

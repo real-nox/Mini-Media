@@ -1,4 +1,6 @@
 let originalData = { user_id: null, nickname: null, bio: null, email: null, url: null, path: null }
+let deletedAvatar = false
+let newAvatar = null
 
 window.addEventListener("load", async () => {
     originalData = {
@@ -9,55 +11,93 @@ window.addEventListener("load", async () => {
 
     //Show pop up
     document.getElementById("edit-profile").addEventListener("click", () => {
-        console.log('hrtr')
         document.getElementById("editProfile").classList.toggle("hide")
     })
 
+    const imageholder = document.getElementById("imageholder")
     const avatarInput = document.getElementById("avatar")
+    const removeavatar = document.getElementById("removeavatar")
+
+    if (!imageholder.src.includes("user.png"))
+        removeavatar.classList.remove("hide")
+    else
+        removeavatar.classList.add("hide")
+
     avatarInput.addEventListener("change", () => {
-        document.getElementById("imageholder").src = URL.createObjectURL((avatarInput.files[0]))
-        document.getElementById("removeavatar").classList.toggle("hide")
+        const file = avatarInput.files[0]
+        if (!file) return
+
+        newAvatar = file
+        imageholder.src = URL.createObjectURL((file))
+        removeavatar.classList.remove("hide")
+        deletedAvatar = false
     })
 
-    document.getElementById("removeavatar").addEventListener("click", (ev) => {
-        document.getElementById("imageholder").src = "img/user.png"
-        document.getElementById("removeavatar").classList.toggle("hide")
+    removeavatar.addEventListener("click", async (ev) => {
+        imageholder.src = "img/user.png"
+        avatarInput.value = ""
+        removeavatar.classList.add("hide")
+        deletedAvatar = true
+        newAvatar = null
     })
 
     document.getElementById("form").addEventListener("submit", async (ev) => {
         ev.preventDefault()
-        originalData.user_id = ev.target.dataset.id
-        const avatar = document.getElementById("avatar").files[0] || null
+        const user_id = ev.target.dataset.id
         const nickname = document.getElementById("nickname").value || null
         const bio = document.getElementById("bio").value || null
         const email = document.getElementById("gmail").value
 
-        const userInfo = { avatar, nickname, email }
-
-        if (avatar) {
-            if (!(avatar.size / 1024 / 1024 < 1)) {
-                document.getElementById("imageholder").src = "img/user.png"
-                document.getElementById("removeavatar").classList.toggle("hide")
-                return
-            }
-            const { signedUrl, path } = await GeneratePublicURL(avatar)
-
-            originalData.path = path
-            const { publicUrl } = await UploadImg(signedUrl, avatar, path)
-            originalData.url = publicUrl
-        }
+        let updatedFields = { user_id }
 
         if (originalData.nickname !== nickname)
-            originalData.nickname = nickname
+            updatedFields.nickname = nickname
 
         if (originalData.email !== email)
-            originalData.email = email
+            updatedFields.email = email
 
         if (originalData.bio !== bio)
-            originalData.bio = bio
+            updatedFields.bio = bio
 
-        const resultat = await UpdateUser(originalData)
-        console.log(resultat)
+        if (deletedAvatar) {
+            try {
+                await DeleteAvatar(user_id)
+                deletedAvatar = false
+            } catch (err) {
+                console.error("Delete failed", err)
+                alert("Failed to remove avatar")
+                return
+            }
+
+            updatedFields.avatar = null
+            updatedFields.avatar_path = null
+        }
+
+        if (newAvatar) {
+            if (!(newAvatar.size / 1024 / 1024 < 1)) {
+                document.getElementById("imageholder").src = "img/user.png"
+                document.getElementById("removeavatar").classList.remove("hide")
+                return
+            }
+            const { signedUrl, path } = await GeneratePublicURL(newAvatar)
+            const { publicUrl } = await UploadImg(signedUrl, newAvatar, path)
+
+            updatedFields.avatar_path = path
+            updatedFields.avatar = publicUrl
+        }
+
+        if (Object.keys(updatedFields).length === 1) {
+            alert("No change")
+            return
+        }
+
+        console.log(updatedFields)
+
+        await UpdateUser(updatedFields)
+        originalData = { nickname, bio, email }
+
+        deletedAvatar = false
+        newAvatar = null
     })
 })
 
@@ -100,13 +140,19 @@ async function GetPublicURL(path) {
     return result.json()
 }
 async function UpdateUser(userInfo) {
-    return (
-        await fetch("/user/update", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                userInfo: userInfo
-            })
+    return await fetch("/user/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userInfo: userInfo
         })
-    ).json()
+    })
+}
+
+async function DeleteAvatar(user_id) {
+    return await fetch("/api/file/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id })
+    })
 }

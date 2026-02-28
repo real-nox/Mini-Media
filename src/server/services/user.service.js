@@ -16,5 +16,20 @@ export const updateUser = async (info) => {
     if (!isUser)
         throw new ErrorHandler("Unfound user", 500)
 
-    return await UpdateUser(info)
+    const fields = []
+    const values = []
+    let index = 1
+
+    for (const key in info) {
+        if (key === "user_id") continue
+        console.log(key)
+        fields.push(`${key} = $${index}`)
+        values.push(info[key])
+        index++
+    }
+
+    if (fields.length === 0) return false
+
+    const result = await UpdateUser({user_id : info.user_id, index: index}, fields, values)
+    return result
 }

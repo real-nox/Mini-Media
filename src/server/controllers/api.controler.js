@@ -166,3 +166,18 @@ export const getURL = async (req, res, next) => {
 
     return res.json(result)
 }
+
+export const DeleteAvatar = async (req, res, next) => {
+    const user_id = req.body?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unfound user ID", 400)
+
+    const currentUserID = req.user?.user_id
+
+    if (user_id !== currentUserID)
+        throw new ErrorHandler("Unauthorized!", 400)
+
+    await apiServices.deleteAvatar(user_id)
+    return res.json("perfect!")
+}
