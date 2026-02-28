@@ -105,3 +105,13 @@ export const GetPublicURL = async (path, folder) => {
 
     return result
 }
+
+export const deleteAvatar = async (user_id) => {
+    const foundUser = await hasIdUser(user_id)
+
+    if (!foundUser[0]?.avatar_path)
+        throw new ErrorHandler("Unfound avatar path!", 500)
+
+     
+    await delFile(foundUser[0]?.avatar_path, "UserAvatar")
+}

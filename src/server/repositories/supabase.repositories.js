@@ -28,11 +28,12 @@ export const FetchURLFile = async (path, folder) => {
     return data
 }
 
-export const delFile = async (path) => {
-    const { data, error } = await sp.storage.from("PostsImg").remove([path])
+export const delFile = async (path, folder = "PostsImg") => {
+    console.log(path, folder)
+    const { data, error } = await sp.storage.from(folder).remove(path)
 
     if (error)
-        throw new ErrorHandler(error, error.status)
+        return false
 
     return data
 }
