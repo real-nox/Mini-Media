@@ -5,9 +5,7 @@ const Decoding = (token, keyToken) => {
         const decoded = jwt.verify(token, process.env.LkeyToken)
         return decoded
     } catch (error) {
-        console.error(error)
-        req.user = null
-        return next()
+        return null
     }
 }
 
