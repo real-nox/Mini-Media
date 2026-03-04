@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { login, logout, refresh, singin } from "../controllers/login.controler.js"
 import { userLM } from "../middlewares/user_login.js"
-import { isAuth, authU } from "../middlewares/sessions.js"
+import { isAuth, auth } from "../middlewares/sessions.js"
 import { authRate } from "../middlewares/rate-limit.js"
 
 const loginR = Router()
@@ -20,8 +20,8 @@ loginR.get("/sign-in", isAuth, (req, res) => {
 
 loginR.post("/sign-in", authRate, singin)
 
-loginR.get("/logout", authU, logout)
+loginR.get("/logout", auth, logout)
 
-loginR.get("/refresh", authU, refresh)
+loginR.get("/refresh", auth, refresh)
 
 export default loginR

@@ -1,53 +1,25 @@
 import jwt from "jsonwebtoken"
 
-export const authS = (req, res, next) => {
-    const token = req.cookies?.ssid
-
-    if (!token) {
-        req.user = null
-        return next()
-    }
-
+const Decoding = (token, keyToken) => {
     try {
         const decoded = jwt.verify(token, process.env.LkeyToken)
-        req.user = decoded
-        return next()
+        return decoded
     } catch (error) {
         console.error(error)
         req.user = null
-        next()
+        return next()
     }
 }
 
-export const authU = (req, res, next) => {
+export const auth = (req, res, next) => {
     const token = req.cookies?.ssid
-
-    if (!token)
-        return res.redirect("/")
-
-    try {
-        const decoded = jwt.verify(token, process.env.LkeyToken)
-        req.user = decoded
-
-        return next()
-    } catch (error) {
-        console.error(error)
-        return res.redirect("/")
-    }
+    req.user = token ? Decoding(token, process.env.LkeyToken) : null
+    return next()
 }
 
 export const isAuth = (req, res, next) => {
     const token = req.cookies?.ssid
-
-    if (!token)
-        return next()
-
-    try {
-        const decoded = jwt.verify(token, process.env.LkeyToken)
-        req.user = decoded
-        return next()
-    } catch (error) {
-        console.error(error)
-        return res.redirect("/")
-    }
+    if (!token) return next()
+    req.user = token ? Decoding(token, process.env.LkeyToken) : null
+    return next()
 }

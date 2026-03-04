@@ -1,12 +1,12 @@
 import { Router } from "express"
-import { authU } from "../middlewares/sessions.js"
+import { auth } from "../middlewares/sessions.js"
 import { CommentsAdd, CommentsDelete, CommentsGet, DeleteAvatar, generateURL, getURL, LikePost, modeApi, postsList } from "../controllers/api.controler.js"
 import { authRate, commentsRate, likesRate, postsRate } from "../middlewares/rate-limit.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"
 
 const api = Router()
 
-api.use(authU)
+api.use(auth)
 api.post("/api/modes/toggle", authRate, modeApi)
 
 api.get("/api/posts", asyncHandler(postsList))
