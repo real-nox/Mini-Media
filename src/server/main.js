@@ -39,10 +39,6 @@ app.use((req, res, next) => {
     res.status(404).send("404")
 })
 
-app.listen(process.env.port, () => {
-    console.info("Running on http://localhost:5500")
-})
-
 app.use((err, req, res, next) => {
     console.error(err)
 
@@ -53,4 +49,8 @@ app.use((err, req, res, next) => {
         message: err.message || "Internal Server Error"
     })
     next()
+})
+
+app.listen(process.env.port, () => {
+    console.info("Running on http://localhost:5500")
 })

@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js"
 import ErrorHandler from "../middlewares/errorsHandler.js"
 
-const url = "https://ptpcwjysiqevhysaagup.supabase.co"
+const url = process.env.SupaPublic
 const secAPIKey = process.env.secretAPIKey
 
 const sp = createClient(url, secAPIKey)

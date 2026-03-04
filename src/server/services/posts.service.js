@@ -5,7 +5,7 @@ import { delFile } from "../repositories/supabase.repositories.js"
 
 export const createPost = async (user_id, content, path, url) => {
 
-    if (content < 5 && !url)
+    if (content?.trim().length < 5 && !url)
         throw new ErrorHandler("Short content!", 400)
 
     const findUser = await hasIdUser(user_id)

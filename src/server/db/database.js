@@ -1,7 +1,7 @@
 import { config } from "dotenv"; config({quiet:true})
-import { Client } from "pg"
+import { Pool } from "pg"
 
-const client = await new Client({
+const client = await new Pool({
     database: process.env.database,
     password: process.env.ps,
     host: process.env.host,
