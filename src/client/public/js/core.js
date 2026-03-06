@@ -187,6 +187,14 @@ window.addEventListener("load", async (ev) => {
         }
     })
 
+    document.querySelectorAll(".follow_unfollow").forEach(btn => {
+        btn.addEventListener("click", async (ev) => {
+            const post_owner_id = btn.dataset.id
+
+            await un_follow(post_owner_id)
+        })
+    })
+
 })
 
 async function toggleMode(btn) {
@@ -277,55 +285,10 @@ async function Createpost(url, path, content) {
 }
 
 async function AddPostDOM(post) {
-    const listDiv = document.getElementById("posts")
-
-    let div = ``
-
-    const innerhtml = listDiv.innerHTML
-
     if (!post.username || post.username === "null") return
-
-    div += `
-                <article id="post-${post.post_id}">
-                    <div class="post">
-                        <div class="user"> 
-                            <a href="/${post.username}"> ${post.username}</a>`
-    if (post.user_id === currentOwner)
-        div += `<div class="post-actions">
-                        <button class="options-btn" data-id="${post.post_id}">⋮</button>
-                        <div class="post-menu hidden" data-id="${post.post_id}">
-                            <button class="edit-btn" data-id="${post.post_id}">Edit</button>
-                            <button class="delete-btn" data-id="${post.post_id}">Delete</button>
-                        </div>
-                    </div>`
-    div += `</div>
-                        <div class="content">`
-    if (post.link)
-        div += `<img src="${post.link}" alt="image">`
-    div += `<p> ${post.ctn} </p>
-                        </div>
-                        <div class="bottomarticle">
-                            <span><button class="like-btn" data-post-id="${post.post_id}">Like ${post.likes}</button></span>
-                            <span><button class="comments-btn" data-post-id="${post.post_id}">Comments</button></span>
-                        </div>
-                        <div id="comments-${post.post_id}" class="comments">
-                            <div class="topcmtbtn">
-                                <form class="add-comment-form" data-post-id="${post.post_id}">
-                                    <span>
-                                        <textarea name="comment" placeholder="Add a comment here."></textarea>
-                                        <button type="submit">Send</button>
-                                    </span>
-                                </form>
-                            </div>
-                            <div class="center" id="center-${post.post_id}"></div>
-                            <div class="btnplace">
-                                <button class="loadmore-btn" data-post-id="${post.post_id}">Load More</button>
-                            </div>
-                        </div>
-                    </div>
-                </article>`
-
-    listDiv.innerHTML = div + innerhtml
+    const listDiv = document.getElementById("posts")
+    const isfollowed = await HasFollowed(post.user_id)
+    listDiv.innerHTML = buildPostHTML(post, currentOwner, isfollowed) + listDiv.innerHTML
 }
 
 async function getList() {
@@ -345,52 +308,14 @@ async function showList(list) {
     const listDiv = document.getElementById("posts")
 
     let div = ``
-
     listDiv.innerHTML = ""
 
     for (const element of list) {
         if (!element.username || element.username === "null") continue
-        div += `
-                <article id="post-${element.post_id}">
-                    <div class="post">
-                        <div class="user"> 
-                            <a href="/${element.username}"> ${element.username}</a>`
-        if (element.user_id === currentOwner)
-            div += `<div class="post-actions">
-                        <button class="options-btn" data-id="${element.post_id}">⋮</button>
-                        <div class="post-menu hidden" data-id="${element.post_id}">
-                            <button class="edit-btn" data-id="${element.post_id}">Edit</button>
-                            <button class="delete-btn" data-id="${element.post_id}">Delete</button>
-                        </div>
-                    </div>`
-        div += `</div>
-                        <div class="content">`
-        if (element.post_img)
-            div += `<img src="${element.post_img}" alt="image">`
-        div += `<p> ${element.p_content} </p>
-                        </div>
-                        <div class="bottomarticle">
-                            <span><button class="like-btn" data-post-id="${element.post_id}">Like ${element.likes}</button></span>
-                            <span><button class="comments-btn" data-post-id="${element.post_id}">Comments</button></span>
-                        </div>
-                        <div id="comments-${element.post_id}" class="comments">
-                            <div class="topcmtbtn">
-                                <form class="add-comment-form" data-post-id="${element.post_id}">
-                                    <span>
-                                        <textarea name="comment" placeholder="Add a comment here."></textarea>
-                                        <button type="submit">Send</button>
-                                    </span>
-                                </form>
-                            </div>
-                            <div class="center" id="center-${element.post_id}"></div>
-                            <div class="btnplace">
-                                <button class="loadmore-btn" data-post-id="${element.post_id}">Load More</button>
-                            </div>
-                        </div>
-                    </div>
-                </article>`
-
+        const isfollowed = await HasFollowed(element.user_id)
+        div += buildPostHTML(element, currentOwner, isfollowed)
     }
+
     listDiv.innerHTML = div
 }
 
@@ -406,8 +331,12 @@ async function like_dislike(post_id, btn) {
         )
         const data = await resultat.json()
 
-        if (resultat.ok)
-            likescontent.innerText = "Like " + (parseInt(likescontent.innerText.replace("Like ", "")) + data)
+        if (resultat.ok) {
+            const current = parseInt(likescontent.dataset.likes)
+            const updated = current + data
+            likescontent.dataset.likes = updated
+            likescontent.innerText = `Like ${updated}`
+        }
         btn.disabled = false
     } catch (err) {
         console.error(err)
@@ -429,7 +358,12 @@ async function loadmore(post_id, btn) {
         const data = await resultat.json()
 
         const comments = data.cmt
-        if (comments.length < 5) return
+        if (comments.length < 5) {
+            btn.disabled = false
+            btn.innerText = "No more comments"
+            return
+        }
+
         if (comments.length > 0)
             cursor[post_id] = comments[comments.length - 1].created_at
 
@@ -494,7 +428,8 @@ async function deletecmt(comment_id, post_id, comment_author_id, btn) {
     try {
         const result = await fetch(`/api/comments/${post_id}`, {
             method: "DELETE",
-            body: JSON.stringify({ author_id: comment_author_id })
+            body: JSON.stringify({ author_id: comment_author_id }),
+            headers: { "Content-Type": "application/json" }
         })
 
         if (result.ok) {
@@ -527,4 +462,90 @@ async function deletePost(post_id) {
     } catch (err) {
         console.error(err)
     }
+}
+
+async function HasFollowed(post_owner_id) {
+    try {
+        console.log(post_owner_id)
+        const result = await fetch("/api/post/followed", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_owner_id: post_owner_id })
+        })
+
+        if (result.ok)
+            return await result.json()
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+async function un_follow(user_id) {
+    try {
+        console.log("here")
+        const result = await fetch("/api/post/un_follow", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_owner_id: user_id })
+        })
+
+        console.log(await result)
+        const data = await result.json()
+
+        if (data)
+            console.log(data)
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+function buildPostHTML(post, currentOwner, isfollowed) {
+    let div = `<article id="post-${post.post_id}">
+                <div class="post">
+                    <div class="user"> 
+                        <a href="/${post.username}">${post.username}</a>`
+
+    if (post.user_id !== currentOwner)
+        div += `<button class="follow_unfollow" data-id="${post.user_id}">${isfollowed ? "Unfollow" : "Follow"}</button>`
+    else
+        div += `<div class="post-actions">
+                    <button class="options-btn" data-id="${post.post_id}">⋮</button>
+                    <div class="post-menu hidden" data-id="${post.post_id}">
+                        <button class="edit-btn" data-id="${post.post_id}">Edit</button>
+                        <button class="delete-btn" data-id="${post.post_id}">Delete</button>
+                    </div>
+                </div>`
+
+    div += `</div>
+                <div class="content">`
+
+    if (post.post_img || post.link)
+        div += `<img src="${post.post_img || post.link}" alt="image">`
+
+    console.log(post)
+    if(post.p_content)
+        div += `<p>${post.p_content}</p>`
+    div += `</div>
+                <div class="bottomarticle">
+                    <span><button class="like-btn" data-post-id="${post.post_id}" data-likes="${post.likes}">Like ${post.likes}</button></span>
+                    <span><button class="comments-btn" data-post-id="${post.post_id}">Comments</button></span>
+                </div>
+                <div id="comments-${post.post_id}" class="comments">
+                    <div class="topcmtbtn">
+                        <form class="add-comment-form" data-post-id="${post.post_id}">
+                            <span>
+                                <textarea name="comment" placeholder="Add a comment here."></textarea>
+                                <button type="submit">Send</button>
+                            </span>
+                        </form>
+                    </div>
+                    <div class="center" id="center-${post.post_id}"></div>
+                    <div class="btnplace">
+                        <button class="loadmore-btn" data-post-id="${post.post_id}">Load More</button>
+                    </div>
+                </div>
+            </div>
+        </article>`
+
+    return div
 }

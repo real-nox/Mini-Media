@@ -181,3 +181,34 @@ export const DeleteAvatar = async (req, res, next) => {
     await apiServices.deleteAvatar(user_id)
     return res.json("perfect!")
 }
+
+export const Followed = async (req, res, next) => {
+    const user_id = req.user?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unauthorized!", 400)
+
+    const post_owner_id = req.body?.post_owner_id
+
+    if (!post_owner_id)
+        throw new ErrorHandler("Unfound post owner!", 400)
+
+    const result = await apiServices.FindFollower(user_id, post_owner_id)
+    return res.json(result)
+}
+
+export const Following = async (req, res, next) => {
+    const user_id = req.user?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unauthorized!", 400)
+
+    const post_owner_id = req.body?.post_owner_id
+
+    if (!post_owner_id)
+        throw new ErrorHandler("Unfound post owner!", 400)
+
+    const result = await apiServices.FindFollower(user_id, post_owner_id)
+    
+    return res.json(await apiServices.FollowUnfollow(user_id, post_owner_id, result))
+}
