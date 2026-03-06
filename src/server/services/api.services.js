@@ -2,6 +2,7 @@ import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
 import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
 import { delFile, FetchURLFile, URLGenerateFile } from "../repositories/supabase.repositories.js"
+import { Follow, GetFollower, Unfollow } from "../repositories/user.repositories.js"
 
 export const Lposts = async (limit) => {
 
@@ -114,4 +115,35 @@ export const deleteAvatar = async (user_id) => {
 
      
     await delFile(foundUser[0]?.avatar_path, "UserAvatar")
+}
+
+export const FindFollower = async (user_id, post_owner_id) => {
+    const foundUser1 = await hasIdUser(user_id)
+
+    if (!foundUser1)
+        throw new ErrorHandler("User not found!", 404)
+
+    const owner_id_post = await hasIdUser(post_owner_id)
+
+    if (!owner_id_post)
+        throw new ErrorHandler("User not found!", 404)
+
+    return await GetFollower(user_id, post_owner_id)
+}
+
+export const FollowUnfollow = async (user_id, post_owner_id, result) => {
+    const foundUser1 = await hasIdUser(user_id)
+
+    if (!foundUser1)
+        throw new ErrorHandler("User not found!", 404)
+
+    const owner_id_post = await hasIdUser(post_owner_id)
+
+    if (!owner_id_post)
+        throw new ErrorHandler("User not found!", 404)
+
+    if (result)
+        return await Unfollow(user_id, post_owner_id)
+    else
+        return await Follow(user_id, post_owner_id)
 }

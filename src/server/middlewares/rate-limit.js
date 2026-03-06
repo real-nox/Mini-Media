@@ -31,3 +31,11 @@ export const likesRate = rateLimit({
     standardHeaders: "draft-8",
     skipSuccessfulRequests: true
 })
+
+export const followingRate = rateLimit({
+    limit: 5,
+    windowMs: 60000 * 2,
+    legacyHeaders: false,
+    standardHeaders: "draft-8",
+    skipSuccessfulRequests: true
+})
