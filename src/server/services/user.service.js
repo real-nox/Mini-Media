@@ -1,6 +1,6 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser, hasUsername } from "../repositories/login.repositories.js"
-import { UpdateUser } from "../repositories/user.repositories.js"
+import { GetUserFollowers, GetUserFollowings, UpdateUser } from "../repositories/user.repositories.js"
 
 export const LoadUser = async (user) => {
     const result = await hasUsername(user)
@@ -8,6 +8,14 @@ export const LoadUser = async (user) => {
     if (!result)
         return false
     return result
+}
+
+export const LoadUserID = async (user_id) => {
+    const result = await hasIdUser(user_id)
+
+    if (!result)
+        return false
+    return result[0]
 }
 
 export const updateUser = async (info) => {
@@ -31,5 +39,27 @@ export const updateUser = async (info) => {
     if (fields.length === 0) return false
 
     const result = await UpdateUser({user_id : info.user_id, index: index}, fields, values)
+    return result
+}
+
+export const followings_User = async (user_id) => {
+    const isUser = await hasIdUser(user_id)
+
+    if (!isUser)
+        throw new ErrorHandler("Unfound user", 500)
+
+    const result = await GetUserFollowings(user_id)
+    console.log(result)
+    return result
+}
+
+export const followers_User = async (user_id) => {
+    const isUser = await hasIdUser(user_id)
+
+    if (!isUser)
+        throw new ErrorHandler("Unfound user", 500)
+
+    const result = await GetUserFollowers(user_id)
+    console.log(result)
     return result
 }

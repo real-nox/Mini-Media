@@ -12,30 +12,31 @@
 
 <body>
     <div id="maincontainer" class="maincontainer <%= mode %>">
-        <div class="topbar">
+        <div class="sidebar">
             <a href="/">Home</a>
-            <p>Hi<%=user.username%>
             </p>
         </div>
-        <div class="center">
+        <div class="center" id="center">
             <div class="top">
                 <div class="imagepart">
                     <img src="<%= user.avatar ? user.avatar : " img/user.png" %>" alt="" width="150">
                 </div>
-                <div class="edit">
+                <div class="edit hidden" id="edit">
                     <button id="edit-profile" data-id="<%= user.user_id %>">Edit</button>
                 </div>
             </div>
 
             <div class="infopart">
-                <h4>
-                    <%= user.nickname %>
-                </h4>
-                <p>@<%= user.username %>
-                </p>
+                <h4><%= user.nickname %></h4>
+                <p id="usernamep">@<%= user.username %></p>
+                <div class="follow" id="follow" data-id="<%= user.user_id %>">
+
+                </div>
                 <p>
                     <%= user.bio ? user.bio : "Pas de bio" %>
                 </p>
+            </div>
+            <div id="bottom" class="bottom">
             </div>
         </div>
     </div>
@@ -63,6 +64,10 @@
                 <button type="submit">Edit</button>
             </form>
         </div>
+    </div>
+
+    <div id="follows" class="follows hidden">
+        <div id="follows top" class="top"></div>
     </div>
 
     <script src="/js/perm.js"></script>

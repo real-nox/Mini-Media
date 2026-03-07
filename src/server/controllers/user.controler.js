@@ -24,3 +24,34 @@ export const UpdateUser = async (req, res, next) => {
 
     return await userService.updateUser(userInfo)
 }
+
+export const Getfollowings = async (req, res, next) => {
+    const user_id = req.body?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unfound user_id", 400)
+
+    const result = await userService.followings_User(user_id)
+    return res.json(result)
+}
+
+export const Getfollowers = async (req, res, next) => {
+    const user_id = req.body?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unfound user_id", 400)
+
+    const result = await userService.followers_User(user_id)
+    return res.json(result)
+}
+
+export const GetUser = async (req, res, next) => {
+    const user_id = req?.body?.user_id
+
+    if (!user_id)
+        throw new ErrorHandler("Unfound user_id", 400)
+
+    const result = await userService.LoadUserID(user_id)
+
+    return res.json(result)
+}

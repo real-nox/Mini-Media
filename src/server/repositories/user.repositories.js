@@ -44,3 +44,25 @@ export const Follow = async (user_id, owner_post_id) => {
         return true
     return false
 }
+
+export const GetUserFollowers = async (user_id) => {
+    const result = await query(
+        "select * from follows where following_id = $1",
+        [user_id]
+    )
+
+    if (result?.rowCount)
+        return {count: result?.rowCount, result : result.rows[0]}
+    return {count: 0, result : null}
+}
+
+export const GetUserFollowings = async (user_id) => {
+    const result = await query(
+        "select * from follows where follower_id = $1",
+        [user_id]
+    )
+
+    if (result?.rowCount)
+        return {count: result?.rowCount, result : result.rows[0]}
+    return {count: 0, result : null}
+}
