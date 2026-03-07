@@ -2,6 +2,14 @@
     position: relative;
 }
 
+.edit.hidden {
+    opacity: 0;
+}
+
+.edit {
+    opacity: 1;
+}
+
 #editProfile {
     position: absolute;
     top: 50%;
@@ -36,4 +44,40 @@
 
 #removeavatar.hide {
     opacity: 0;
+}
+
+/* Main */
+
+.maincontainer {
+    display: flex;
+}
+
+.sidebar {
+    width: 10%;
+    background-color: antiquewhite;
+}
+
+.center {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    width: 80%;
+}
+
+.follows {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    background-color: rgb(230, 230, 230);
+    transition: opacity 0.5s ease;
+
+    color: white;
+}
+
+.follows.hidden {
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
