@@ -113,7 +113,7 @@ export const deleteAvatar = async (user_id) => {
     if (!foundUser[0]?.avatar_path)
         throw new ErrorHandler("Unfound avatar path!", 500)
 
-     
+
     await delFile(foundUser[0]?.avatar_path, "UserAvatar")
 }
 
@@ -142,8 +142,11 @@ export const FollowUnfollow = async (user_id, post_owner_id, result) => {
     if (!owner_id_post)
         throw new ErrorHandler("User not found!", 404)
 
-    if (result)
-        return await Unfollow(user_id, post_owner_id)
-    else
-        return await Follow(user_id, post_owner_id)
+    if (result) {
+        await Unfollow(user_id, post_owner_id)
+        return false
+    } else {
+        await Follow(user_id, post_owner_id)
+        return true
+    }
 }

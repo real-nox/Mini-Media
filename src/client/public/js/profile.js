@@ -6,75 +6,111 @@ let currentOwner = null
 window.addEventListener("load", async () => {
 
     currentOwner = await owner()
+
+    let followings
+    let followers
+
+    let followe
+    let followsList
+
     const followdiv = document.getElementById("follow")
+
     const user_id = followdiv.dataset.id
 
-    const followings = await Getfollowings(user_id)
-    const followers = await Getfollowers(user_id)
+    async function followS() {
 
-    const div = `<button id="followersL" data-id="${user_id}">Followers ${followers.count} </button> <button id="followingL" data-id="${user_id}">Following ${followings.count} </button>`
+        followings = await Getfollowings(user_id)
+        followers = await Getfollowers(user_id)
 
-    followdiv.innerHTML = div
+        const div = `<button id="followersL" data-id="${user_id}">Followers ${followers.count} </button> <button id="followingL" data-id="${user_id}">Following ${followings.count} </button>`
+        followdiv.innerHTML = div
 
-    const followsList = document.getElementById("follows")
+        followsList = document.getElementById("follows")
 
-    let followe = Array.isArray(followers.result) ? followers.result : [followers.result]
-    document.getElementById("followersL").addEventListener("click", async (ev) => {
-        followsList.classList.toggle("hidden")
+        followe = Array.isArray(followers.result) ? followers.result : [followers.result]
 
-        if (followe) {
-            followe = Array.isArray(followe) ? followe : [followe]
-            let followersd = "<div id='center'>"
+        ListenersFollowers()
+        FollowBTN()
+    }
 
-            for (const { follower_id, following_id } of followe) {
-                console.log(follower_id)
-                const user = await GetUserViaID(follower_id)
-                console.log(user)
-                followersd += `<span><a href="/${user.username}">${user.username}</a>`
-            }
+    function ListenersFollowers() {
+        const followersBTN = document.getElementById("followersL")
+        const followingBTN = document.getElementById("followingL")
 
-            document.getElementById("follows").innerHTML = document.getElementById("follows top").innerHTML = "<p>Followers</p>" + followersd
+        if (followersBTN)
+            followersBTN.addEventListener("click", async (ev) => {
+                followsList.classList.toggle("hidden")
+
+                if (followe) {
+                    followe = Array.isArray(followe) ? followe : [followe]
+                    let followersd = "<div id='center'>"
+
+                    for (const { follower_id, following_id } of followe) {
+                        console.log(follower_id)
+                        const user = await GetUserViaID(follower_id)
+                        console.log(user)
+                        followersd += `<span><a href="/${user.username}">${user.username}</a></span>`
+                    }
+
+                    document.getElementById("follows").innerHTML = document.querySelector("#follows-top").innerHTML = "<p>Followers</p>" + followersd
+                }
+            })
+
+        if (followingBTN)
+            followingBTN.addEventListener("click", async (ev) => {
+                followsList.classList.toggle("hidden")
+
+                let followin = followings.result
+                if (followin) {
+                    followin = Array.isArray(followin) ? followin : [followin]
+                    let followingsd = "<div id='center'>"
+
+                    for (const { follower_id, following_id } of followin) {
+                        console.log(following_id)
+                        const user = await GetUserViaID(following_id)
+                        console.log(user)
+                        followingsd += `<span><a href="/${user.username}">${user.username}</a></span>`
+                    }
+
+                    document.getElementById("follows").innerHTML = document.getElementById("follows top").innerHTML = "<p>Following</p>" + followingsd
+                }
+            })
+    }
+
+    function FollowBTN() {
+        if (user_id === currentOwner) return
+
+        const btn = document.getElementById("bottom")
+        if (!btn) return
+
+        if (!followe || followe.some(f => f == null))
+            btn.innerHTML = `<button class="follow_unfollow" id="follow_unfollow" data-id="${user_id}">Follow</button>`
+        else {
+            let isFollowed = false
+            followe.forEach(element => {
+                if (element.follower_id === currentOwner)
+                    isFollowed = true
+            })
+
+            if (isFollowed)
+                btn.innerHTML = `<button class="follow_unfollow" id="follow_unfollow" data-id="${user_id}">Unfollow</button>`
+            else
+                btn.innerHTML = `<button class="follow_unfollow" id="follow_unfollow" data-id="${user_id}">Follow</button>`
         }
-    })
-
-    document.getElementById("followingL").addEventListener("click", async (ev) => {
-        followsList.classList.toggle("hidden")
-
-        let followin = followings.result
-        if (followin) {
-            followin = Array.isArray(followin) ? followin : [followin]
-            let followingsd = "<div id='center'>"
-
-            for (const { follower_id, following_id } of followin) {
-                console.log(following_id)
-                const user = await GetUserViaID(following_id)
-                console.log(user)
-                followingsd += `<span><a href="/${user.username}">${user.username}</a>`
-            }
-
-            document.getElementById("follows").innerHTML = document.getElementById("follows top").innerHTML = "<p>Following</p>" + followingsd
-        }
-    })
-
-
-    if (user_id !== currentOwner) {
-        if (!followe || !followe.includes(currentOwner))
-            document.getElementById("bottom").innerHTML = `<button class="follow_unfollow" id="follow_unfollow" data-id="${user_id}">Follow</button>`
-        else
-            document.getElementById("bottom").innerHTML = `<button class="follow_unfollow" id="follow_unfollow" data-id="${user_id}">Unfollow</button>`
 
         const followBTN = document.getElementById("follow_unfollow")
 
-        console.log(followBTN)
         if (followBTN)
             followBTN.addEventListener("click", async (ev) => {
-                console.log("here")
                 const owner = followBTN.dataset.id
-
-                await un_follow(owner)
+                const res = await un_follow(owner)
+                await followS()
             })
+    }
 
-    } else {
+    await followS()
+
+    if (user_id === currentOwner) {
         document.getElementById("edit").classList.remove("hidden")
         originalData = {
             nickname: document.getElementById("nickname").value,
@@ -289,18 +325,15 @@ async function owner() {
 
 async function un_follow(user_id) {
     try {
-        console.log("here")
         const result = await fetch("/user/follow_unfollow", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ post_owner_id: user_id })
         })
 
-        console.log(await result)
         const data = await result.json()
 
-        if (data)
-            console.log(data)
+        return data
     } catch (err) {
         console.error(err)
     }
