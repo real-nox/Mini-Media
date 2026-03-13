@@ -70,4 +70,68 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 25px;
+}
+
+.post {
+    min-height: 25vh;
+    max-height: 75vh;
+    width: 25vw;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgb(119, 119, 119);
+    border-radius: 5px;
+
+    box-shadow: 1px 0px 10px rgb(53, 53, 53);
+}
+
+.post .user,
+.post .content,
+.post .bottomarticle {
+    width: 90%;
+}
+
+.post .user {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post .user a {
+    text-decoration: none;
+    color: rgb(255, 0, 0);
+}
+.post .content {
+    min-height: 25vh;
+    max-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(242, 242, 242);
+}
+
+.post .bottomarticle {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.post .content img {
+    height: 90%;
+    width: 90%;
+}
+
+.post .content .contentP {
+    width: 100%;
+    position: relative;
+    top: 0;
+    background-color: rgb(167, 167, 167);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.post .content .contentP p {
+    color: white;
 }
