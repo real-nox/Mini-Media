@@ -159,6 +159,7 @@ window.addEventListener("load", async (ev) => {
     }))
 
     document.querySelectorAll(".delete-btn").forEach(delete_btn => delete_btn.addEventListener("click", async (ev) => {
+        ev.preventDefault()
         const post_id = delete_btn.dataset.id
         await deletePost(post_id)
     }))
@@ -171,20 +172,22 @@ window.addEventListener("load", async (ev) => {
 
         const content = document.getElementById("content")
 
+        let result = null
+        let signedUrl, path = null
         if (file) {
             if (!(file.size / 1024 / 1024 < 1))
                 return alert("Large image!")
 
-            const { signedUrl, path } = await generateSignedUrl(file)
+            signedUrl, path = await generateSignedUrl(file)
 
-            const result = await uploadFile(signedUrl, file, path)
-
-            await Createpost(result.publicUrl, path, content)
-
-            content.innerText = ""
-            fileInput.innerHTML = ""
-            document.getElementById("postC").classList.toggle("hidden")
+            result = await uploadFile(signedUrl, file, path)
         }
+
+        await Createpost(result?.publicUrl ? result?.publicUrl : null, path, content)
+
+        content.innerText = ""
+        fileInput.innerHTML = ""
+        document.getElementById("postC").classList.toggle("hidden")
     })
 
     document.querySelectorAll(".follow_unfollow").forEach(btn => {
@@ -523,8 +526,8 @@ function buildPostHTML(post, currentOwner, isfollowed) {
         div += `<img src="${post.post_img || post.link}" alt="image">`
 
     console.log(post)
-    if(post.p_content)
-        div += `<p>${post.p_content}</p>`
+    if (post.p_content)
+        div += `<div class="contentP"><p>${post.p_content}</p></div>`
     div += `</div>
                 <div class="bottomarticle">
                     <span><button class="like-btn" data-post-id="${post.post_id}" data-likes="${post.likes}">Like ${post.likes}</button></span>

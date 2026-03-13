@@ -18,7 +18,7 @@ export const createPost = async (user_id, content, path, url) => {
     if (!response)
         throw new ErrorHandler("Database request failed!", 500)
 
-    return { username: findUser[0].username, link: url, ctn: content, post_id: response.post_id, created_at: response.created_at, likes: 0, user_id: user_id }
+    return { username: findUser[0].username, link: url, p_content: content, post_id: response.post_id, created_at: response.created_at, likes: 0, user_id: user_id }
 }
 
 export const deletePost = async (post_id, user_id) => {
