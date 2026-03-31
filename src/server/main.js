@@ -10,6 +10,7 @@ import { modes } from "./middlewares/user_login.js";
 import api from "./routers/api.js";
 import postR from "./routers/posts.js";
 import sp from "./db/supabase.js";
+import messagesR from "./routers/messages.js";
 
 const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -34,6 +35,7 @@ app.use(loginR)
 app.use(userR)
 app.use(api)
 app.use(postR)
+app.use(messagesR)
 
 app.use((req, res, next) => {
     res.status(404).send("404")
