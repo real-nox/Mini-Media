@@ -23,9 +23,10 @@ export const login = async (req, res, next) => {
         const result = await login_service.loginUser(email, password)
         const { success, error } = result
 
-        if (!success)
-            return res.render("logins/login", { error })
-
+        if (!success){
+            console.log(error)
+            return res.render("logins/login", { emailback: email, error: error })
+}
         res.cookie("shssid", result.Tokens.short, {
             maxAge: 900000,
             secure: true,
