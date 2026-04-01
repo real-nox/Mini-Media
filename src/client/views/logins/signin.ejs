@@ -10,22 +10,28 @@
 <body>
     <p>Sign in</p>
     <a href="/login">Login</a>
-    <p><%=error ? error : ""%></p>
-    <form action="sign-in" method="post">
-        <label for="nickname">Game Tag</label>
-        <input type="text" name="nickname" id="nickname">
+    <p style="color: red;">
+        <%=error ? error : "" %>
+    </p>
+    <div style="display: flex;">
+        <form action="sign-in" method="post">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <label for="nickname">Game Tag</label>
+                <input type="text" name="nickname" id="nickname">
 
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username">
 
-        <label for="email">Email</label>
-        <input type="text" name="email" id="email">
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email">
 
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password">
 
-        <button type="submit">Login</button>
-    </form>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>

@@ -10,15 +10,22 @@
 <body>
     <p>Login</p>
     <a href="/sign-in">Sign in</a>
-    <form action="login" method="post">
-        <label for="email">Email</label>
-        <input type="text" name="email" id="email">
+    <div style="display: flex;">
+        <form action="login" method="post">
 
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password">
+                <p style="color: red;"><%=error ? error : ""%></p>
 
-        <button type="submit">Login</button>
-    </form>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <label for="email">Email</label>
+                    <input type="text" name="email" id="email" value="<%= emailback %>">
+
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password">
+
+                    <button type="submit">Login</button>
+                </div> 
+                </form>
+    </div>
 </body>
 
 </html>
