@@ -1,5 +1,6 @@
 export const userLM = (req, res, next) => {
     res.locals.error = []
+    res.locals.emailback = []
 
     if (req.error)
         res.locals.error = req.error
