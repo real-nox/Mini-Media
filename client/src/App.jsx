@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import GuestMode from "./pages/Guest";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/Auth/Login";
+import TopbarComponent from "./components/Topbar";
+import RegisterPage from "./pages/Auth/Register";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -27,7 +30,13 @@ function App() {
   }, []);
 
   return (
-      <Router>{user ? GuestMode() : GuestMode()}</Router>
+    <BrowserRouter>
+      <TopbarComponent user={user} />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage /> }/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
