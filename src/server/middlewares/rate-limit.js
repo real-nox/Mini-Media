@@ -1,7 +1,7 @@
 import { rateLimit } from "express-rate-limit"
 
 export const authRate = rateLimit({
-    limit: 5,
+    limit: 100,
     windowMs: 60000 * 5,
     legacyHeaders: false,
     standardHeaders: "draft-8"

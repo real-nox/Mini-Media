@@ -1,6 +1,9 @@
 import express from "express"
+import cors from "cors"
 
 import { join, dirname } from "path"; import { fileURLToPath } from "url"
+
+/*
 import cookieParser from "cookie-parser";
 
 import loginR from "./routers/login.js";
@@ -10,13 +13,17 @@ import { modes } from "./middlewares/user_login.js";
 import api from "./routers/api.js";
 import postR from "./routers/posts.js";
 import sp from "./db/supabase.js";
-import messagesR from "./routers/messages.js";
+import messagesR from "./routers/messages.js";*/
 
 const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 app.use(express.json())
-app.use(cookieParser())
+/*app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 
 app.set("view engine", "ejs")
@@ -29,13 +36,21 @@ app.get("/", modes, auth, (req, res) => {
     const mode = req?.mode
 
     return res.render("home", { user, mode })
+})*/
+
+app.get("/api/home"/*, modes, auth*/, (req, res) => {
+    return res.json({ user : "Rayane", mode : "Dark"})
+    /*const user = req?.user
+    const mode = req?.mode
+
+    return res.json({ user, mode })*/
 })
 
-app.use(loginR)
+/*app.use(loginR)
 app.use(userR)
 app.use(api)
 app.use(postR)
-app.use(messagesR)
+app.use(messagesR)*/
 
 app.use((req, res, next) => {
     res.status(404).send("404")
@@ -53,6 +68,6 @@ app.use((err, req, res, next) => {
     next()
 })
 
-app.listen(process.env.port, () => {
-    console.info("Running on http://localhost:5500")
+app.listen(5000, () => {
+    console.info("Running on http://localhost:5173")
 })
