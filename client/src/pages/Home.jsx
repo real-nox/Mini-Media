@@ -1,6 +1,5 @@
-export default function Home() {
-    return (
-        <>
-        <p>WOW</p></>
-    )
+import TopbarComponent from "../components/Topbar";
+
+export default function Home({ user }) {
+  return <>{user ? "": <TopbarComponent />}</>;
 }

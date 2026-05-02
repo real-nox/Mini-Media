@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Auth/Login";
 import TopbarComponent from "./components/Topbar";
 import RegisterPage from "./pages/Auth/Register";
+import Home from "./pages/Home";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -13,12 +14,13 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/home", {
+        const response = await fetch(`${import.meta.env.VITE_link}/`, {
           method: "GET",
           credentials: "include",
         });
         const data = await response.json();
 
+        console.log(data)
         setUser(data.user);
         setMode(data.mode);
       } catch (err) {
@@ -31,8 +33,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      <TopbarComponent user={user} />
       <Routes>
+        <Route path="/" element={<Home user={user} />}/>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage /> }/>
       </Routes>
