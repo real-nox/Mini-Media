@@ -2,15 +2,15 @@ import * as login_service from "../services/login.service.js";
 
 export const singin = async (req, res, next) => {
     try {
-        const { nickname, username, email, password } = req.body
+        const { nickname, username, email, password, checkPwd } = req.body
 
         const result = await login_service.singinUser(nickname, username, email, password)
         const { success, error } = result
 
         if (success)
-            return res.redirect("/")
+            return res.json({ success: true, error : ""})
         else
-            return res.render("logins/signin", { error })
+            return res.json({success, error})
     } catch (err) {
         console.error(err)
     }

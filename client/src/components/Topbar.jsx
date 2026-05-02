@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 
-function TopbarComponent({ user }) {
+function TopbarComponent() {
   return (
     <>
       <div className="TopbarHolder">
         <div className="TopElements">
-          <div className="LeftBar"></div>
+          <div className="LeftBar">
+            <h3>Mini Media</h3>
+          </div>
           <div className="RightBar">
-            {user ? <span>Hey {user} </span> : <p>Wow</p>}
             <Link className="LoginBTN" to="/login">
               Login
             </Link>

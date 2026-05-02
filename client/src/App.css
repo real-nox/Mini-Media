@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.TopbarHolder {
+    height: 7vh;
+    background-color: rgb(53, 53, 53);
+}
+
+.TopbarHolder .TopElements {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+    align-items: center;
+    padding: 0px 50px;
+}
+
+.TopbarHolder .TopElements .RightBar,
+.TopbarHolder .TopElements .LeftBar {
+    color: white;
+}
+
+.TopbarHolder .TopElements .RightBar {
+    display: flex;
+    width: 40%;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.TopbarHolder .TopElements .RightBar .LoginBTN {
+    color: black;
+    background-color: white;
+    text-decoration: none;
+    padding: 2.5px 7.5px;
+    border-radius: 5px;
+}
+
+.TopbarHolder .TopElements .RightBar .RegisterBTN {
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 0, 60);
+    text-decoration: none;
+    padding: 2.5px 7.5px;
+    border-radius: 5px;
+}
+
+.RegisterContainer {
+    padding: 20px 50px;
+    height: 83vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.RegisterContainer .RegisterForm {
+    width: 40%;
+    background-color: rgb(233, 233, 233);
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.RegisterContainer .RegisterForm .FormRegi {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    gap: 5px;
+    height: 95%;
+    margin: 20px 0px;
+}
+
+.RegisterContainer .RegisterForm .FormRegi h3 {
+    width: 100%;
+    text-align: center;
+}
