@@ -9,6 +9,12 @@ function RegisterPage() {
   const [pwd, setPDW] = useState("");
   const [checkPwd, setPWDCheck] = useState("");
 
+  const [validate, setValidation] = useState({
+    username: false,
+    password: false,
+    cpwd: false,
+  });
+
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -30,38 +36,68 @@ function RegisterPage() {
 
       const data = await result.json();
 
-      if (data)
-        setError(data.error)
-
+      if (data) setError(data.error);
     } catch (err) {
       console.log(err);
     }
   };
 
-  window.addEventListener("load", (ev) => {
-    let points = {
-        username : false,
-        email: false,
-        password: false,
-        cpwd: false
-    }
+  const username_special_char_reg = /^[a-zA-Z0-9._-]+$/;
+  const special_char_reg = /[!@#$%^&*()\-_=+\[\]{};':",.<>/?\\|]/;
+  const num_range_reg = /[0-9]/;
+  const cap_letters_char = /[A-Z]/;
+  const low_letters_char = /[a-z]/;
 
-    //Check username, if it includes special char, numbers, same for password
+  const validateUsername = (username) => {
+    return username_special_char_reg.test(username)
+  }
 
-    document.getElementById("username").addEventListener("input", (ev) => {
-        if (ev.target.value.toUpperCase()) {
-            points.username = false
-        } else {
-            points.username = true
-        }
-    })
+  const validatePWD = (password) => {
+    let score = 0
 
-    function checkValidity() {
-        if (points.cpwd && points.email && points.password && points.username)
-            return document.getElementById("btnSubmit").disabled = true
-        return document.getElementById("btnSubmit").disabled = false
-    }
-  })
+    if (special_char_reg.test(password)) score++
+    if (num_range_reg.test(password)) score++
+    if (cap_letters_char.test(password)) score++
+    if (low_letters_char.test(password)) score++
+
+    return score >= 3
+  }
+
+  const validateCPWD = (pwd, confirmpwd) => {
+    console.log(pwd, confirmpwd)
+    return pwd == confirmpwd && pwd.length > 0
+  }
+
+  const handleUsername = (ev) => {
+    const chars = ev.target.value;
+    console.log(chars);
+    setUsername(chars)
+    setValidation((prev) => ({
+      ...prev,
+      username: validateUsername(chars)
+    }))
+  };
+
+  const handlePassword = (ev) => {
+    const chars = ev.target.value
+    setPDW(chars)
+    setValidation((prev) => ({
+      ...prev,
+      password: validatePWD(chars),
+      cpwd: validateCPWD(chars, checkPwd)
+    }))
+  };
+
+  const handleConfirmPWD = (ev) => {
+    const chars = ev.target.value
+    setPWDCheck(chars)
+    setValidation((prev) => ({
+      ...prev,
+      cpwd: validateCPWD(pwd, chars)
+    }))
+  };
+
+  const handleValidity = validate.username && validate.cpwd && validate.password
 
   return (
     <>
@@ -70,9 +106,6 @@ function RegisterPage() {
         <div className="RegisterForm">
           <form onSubmit={handleRegister} className="FormRegi">
             <h3>Register</h3>
-            {
-                console.log(error)
-            }
             {error ? <p>{error}</p> : ""}
             <label htmlFor="display_name">Display Name</label>
             <input
@@ -87,8 +120,9 @@ function RegisterPage() {
               id="username"
               type="text"
               name="username"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsername}
             />
+            <p>{validate.username ? "" : "Incorrect"}</p>
             <label htmlFor="email">Email</label>
             <input
               id="email"
@@ -101,16 +135,24 @@ function RegisterPage() {
               id="pwd"
               type="password"
               name="password"
-              onChange={(e) => setPDW(e.target.value)}
+              onChange={handlePassword}
             />
+            <p>
+              {validate.password
+                ? "✓ Strong password"
+                : "✗ Need: 5+ chars, numbers, capital, lowercase, special char"}
+            </p>
             <label htmlFor="confirm_pwd">Confirm Password</label>
             <input
               id="pwdconfirm"
               type="password"
               name="confirm_pwd"
-              onChange={(e) => setPWDCheck(e.target.value)}
+              onChange={handleConfirmPWD}
             />
-            <button type="submit" id="btnSubmit">Create Account</button>
+            <p>{validate.cpwd ? "Matching" : "Not matching"}</p>
+            <button type="submit" id="btnSubmit" disabled={!handleValidity}>
+              Create Account
+            </button>
           </form>
         </div>
       </div>
