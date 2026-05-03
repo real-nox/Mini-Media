@@ -1,0 +1,16 @@
+.SideBarContainer {
+    width: 20%;
+    height: 92.6vh;
+    background-color: rgb(53, 53, 53);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.SideBarContainer .sideBarElements {
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    padding: 15px 0px;
+}
