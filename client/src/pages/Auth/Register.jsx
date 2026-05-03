@@ -36,7 +36,10 @@ function RegisterPage() {
 
       const data = await result.json();
 
-      if (data) setError(data.error);
+      if (data) {
+        if (data.success)
+          return navigate("/login")
+        setError(data.error);}
     } catch (err) {
       console.log(err);
     }
