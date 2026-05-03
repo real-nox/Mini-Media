@@ -36,8 +36,7 @@ export const loginUser = async (email, password) => {
 
     email = email.toLowerCase()
 
-    const foundbyEmail = await login_repositories.hasEmail(email)
-    const foundbyUsername = await login_repositories.hasUsername(email)
+    const foundUser = await login_repositories.hasEmail(email) || await login_repositories.hasUsername(email)
 
     if (!foundbyEmail && !foundbyUsername)
         return { success: false, error: "Incorrect Email/Password" }

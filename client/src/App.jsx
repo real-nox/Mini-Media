@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import GuestMode from "./pages/Guest";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/Auth/Login";
-import TopbarComponent from "./components/Topbar";
-import RegisterPage from "./pages/Auth/Register";
+import { useEffect, useState } from "react";
+
 import Home from "./pages/Home";
+import LoginPage from "./pages/Auth/Login";
+import RegisterPage from "./pages/Auth/Register";
+import TopbarComponent from "./components/Topbar";
+
+import "./css/App.css";
+import "./css/Guest.css"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -20,7 +22,7 @@ function App() {
         });
         const data = await response.json();
 
-        console.log(data)
+        console.log(data.user)
         setUser(data.user);
         setMode(data.mode);
       } catch (err) {
@@ -35,8 +37,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home user={user} />}/>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage /> }/>
+        <Route path="/login" element={<LoginPage user={user} />} />
+        <Route path="/register" element={<RegisterPage user={user} /> }/>
       </Routes>
     </BrowserRouter>
   );

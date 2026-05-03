@@ -20,12 +20,13 @@ export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body
 
+        console.log(email, password)
         const result = await login_service.loginUser(email, password)
         const { success, error } = result
 
         if (!success){
             console.log(error)
-            return res.render("logins/login", { emailback: email, error: error })
+            return res.json({ success: false, emailback: email, error: error })
 }
         res.cookie("shssid", result.Tokens.short, {
             maxAge: 900000,
@@ -41,7 +42,7 @@ export const login = async (req, res, next) => {
             sameSite: "strict"
         })
 
-        return res.redirect("/")
+        return res.json({ success: true })
     } catch (err) {
         console.error(err)
     }

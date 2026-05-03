@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function TopbarComponent() {
+function TopbarComponent({user}) {
   return (
     <>
       <div className="TopbarHolder">

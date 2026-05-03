@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopbarComponent from "../../components/Topbar";
 
-function RegisterPage() {
+function RegisterPage({user}) {
   const [display_name, setDisplay] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -19,12 +19,17 @@ function RegisterPage() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
+
   const handleRegister = async (ev) => {
     try {
       ev.preventDefault();
       const result = await fetch(`${import.meta.env.VITE_link}/sign-in`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           nickname: display_name,
           username,
@@ -105,12 +110,12 @@ function RegisterPage() {
   return (
     <>
       <TopbarComponent />
-      <div className="RegisterContainer">
-        <div className="RegisterForm">
+      <div className="AuthContainer RegisterContainer">
+        <div className="AuthForm RegisterForm">
           <form onSubmit={handleRegister} className="FormRegi">
             <h3>Register</h3>
             {error ? <p>{error}</p> : ""}
-            <label htmlFor="display_name">Display Name</label>
+            <label htmlFor="displayn">Display Name</label>
             <input
               id="displayn"
               type="text"
@@ -133,7 +138,7 @@ function RegisterPage() {
               name="email"
               onChange={(e) => setEmail(e.target.value)}
             />
-            <label htmlFor="password">Password</label>
+            <label htmlFor="pwd">Password</label>
             <input
               id="pwd"
               type="password"
@@ -145,7 +150,7 @@ function RegisterPage() {
                 ? "✓ Strong password"
                 : "✗ Need: 5+ chars, numbers, capital, lowercase, special char"}
             </p>
-            <label htmlFor="confirm_pwd">Confirm Password</label>
+            <label htmlFor="pwdconfirm">Confirm Password</label>
             <input
               id="pwdconfirm"
               type="password"
