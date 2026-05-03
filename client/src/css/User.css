@@ -1,6 +1,11 @@
+.CenterContainer {
+    display: flex;
+    height: 92.6vh;
+    width: 100%;
+}
+
 .SideBarContainer {
     width: 20%;
-    height: 92.6vh;
     background-color: rgb(53, 53, 53);
     display: flex;
     flex-direction: column;
@@ -13,4 +18,27 @@
     text-decoration: none;
     color: white;
     padding: 15px 0px;
+}
+
+/* Post create */
+
+.CreatePost {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.CreatePost .PostForm {
+    background-color: rgb(41, 41, 41);
+    width: 50%;
+    height: 45%;
+    display: flex;
+    justify-content: center;
+    padding: 50px 0px;
+}
+
+.PostForm textarea {
+    width: 250px;
 }

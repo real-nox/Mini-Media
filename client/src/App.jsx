@@ -8,6 +8,7 @@ import TopbarComponent from "./components/Topbar";
 
 import "./css/App.css";
 import "./css/Guest.css"
+import CreatePost from "./pages/User/Create";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -39,6 +40,7 @@ function App() {
         <Route path="/" element={<Home user={user} />}/>
         <Route path="/login" element={<LoginPage user={user} />} />
         <Route path="/register" element={<RegisterPage user={user} /> }/>
+        <Route path="/create-post" element={<CreatePost user={useEffect} />}/>
       </Routes>
     </BrowserRouter>
   );

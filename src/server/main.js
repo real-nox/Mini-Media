@@ -60,5 +60,5 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(5000, () => {
-    console.info("Running on http://localhost:5173")
+    console.info("Running on http://localhost:5000")
 })
