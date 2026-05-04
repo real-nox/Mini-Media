@@ -1,3 +1,4 @@
+import ContentMedia from "../components/ContentMedia";
 import SidebarComponent from "../components/Sidebar";
 import "../css/User.css";
 
@@ -6,6 +7,7 @@ export default function HomePage() {
     <>
       <div className="CenterContainer">
         <SidebarComponent />
+        <ContentMedia />
       </div>
     </>
   );

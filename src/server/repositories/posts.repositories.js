@@ -2,10 +2,10 @@ import query from "../db/database.js"
 
 export const savePost = async (user_id, content/*, path, url*/) => {
     //const result = await query("insert into posts (post_owner_id, p_content, post_img, post_path) values ($1, $2, $3, $4) returning *", [user_id, content, url, path])
-    const result = await query("insert into posts (post_owner_id, p_content) values ($1, $2) returning *", [user_id, content])
+    const result = await query("insert into posts (post_owner_id, p_content) values ($1, $2)", [user_id, content])
     if (result.rowCount === 0)
         return false
-    return { post_id: result.rows[0].post_id, created_at: result.rows[0].created_at }
+    return true
 }
 
 export const listPosts = async (limit) => {

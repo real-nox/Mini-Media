@@ -18,8 +18,9 @@ api.get("/api/post/:post/comments", asyncHandler(CommentsGet))
 api.post("/api/post/:post/comments", commentsRate, asyncHandler(CommentsAdd))
 
 api.get("/api/user", (req, res) => {
-    if (req.user)
+    if (req?.user)
         return res.json(req.user.user_id)
+    return res.status(404)
 })
 
 api.delete("/api/comments/:post", commentsRate, asyncHandler(CommentsDelete))

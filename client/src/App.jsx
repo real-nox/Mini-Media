@@ -23,7 +23,6 @@ function App() {
         });
         const data = await response.json();
 
-        console.log(data.user)
         setUser(data.user);
         setMode(data.mode);
       } catch (err) {

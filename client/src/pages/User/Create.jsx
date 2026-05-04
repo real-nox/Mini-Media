@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SidebarComponent from "../../components/Sidebar";
 import TopbarComponent from "../../components/Topbar";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePost({ user }) {
   const [title, setTitle] = useState("");
@@ -8,6 +9,8 @@ export default function CreatePost({ user }) {
 
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
+
+  const navigation = useNavigate()
 
   function sanitizeHTML(txt) {
     const div = document.createElement("div");
@@ -33,7 +36,10 @@ export default function CreatePost({ user }) {
       })
       const data = await result.json()
 
-      console.log(data)
+      if (data.success)
+        return navigation("/")
+      else
+        return setError(data.error)
       return data
     
     } catch (err) {
