@@ -23,7 +23,7 @@
 /* Post create */
 
 .CreatePost {
-    width: 90%;
+    width: 80%;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -33,12 +33,42 @@
 .CreatePost .PostForm {
     background-color: rgb(41, 41, 41);
     width: 50%;
-    height: 45%;
+    height: auto;
     display: flex;
     justify-content: center;
     padding: 50px 0px;
 }
 
 .PostForm textarea {
-    width: 250px;
+    width: auto;
+    height: auto;
+    max-width: 250px;
+    max-height: 200px;
+    resize: none;
+    overflow-y: auto;
+}
+
+.formPost {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    color: white;
+}
+
+.formPost p {
+    font-size: 10px;
+}
+
+.formPost .p {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.formPost .p.red {
+    color: rgb(207, 24, 24);
+}
+
+.formPost .p.green {
+    color: rgb(0, 165, 74);
 }

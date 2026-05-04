@@ -4,19 +4,22 @@ import * as posts_service from "../services/posts.service.js"
 export const postCreate = async (req, res, next) => {
     const user_id = req?.user?.user_id
     const content = req?.body?.content
-    const path = req.body?.path
-    const url = req.body?.url
+    const title = req?.body?.title
+    /*const path = req.body?.path
+    const url = req.body?.url*/
+
+    console.log(req?.body)
 
     if (!user_id)
         throw new ErrorHandler("Unspecified user", 400)
 
-    if (!url && !content?.trim())
+    /*if (!url && !content?.trim())
         throw new ErrorHandler("Unspecified content", 400)
 
     if ((!path && url) || (path && !url))
-        throw new ErrorHandler("Unspecified file", 400)
+        throw new ErrorHandler("Unspecified file", 400)*/
 
-    const result = await posts_service.createPost(user_id, content, path, url)
+    const result = await posts_service.createPost(user_id, content/*, path, url*/)
 
     return res.json(result)
 }

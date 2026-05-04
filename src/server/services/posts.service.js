@@ -3,9 +3,9 @@ import { hasIdUser } from "../repositories/login.repositories.js"
 import * as postsRep from "../repositories/posts.repositories.js"
 import { delFile } from "../repositories/supabase.repositories.js"
 
-export const createPost = async (user_id, content, path, url) => {
+export const createPost = async (user_id, content/*, path, url*/) => {
 
-    if (content?.trim().length < 5 && !url)
+    if (content?.trim().length < 5/* && !url*/)
         throw new ErrorHandler("Short content!", 400)
 
     const findUser = await hasIdUser(user_id)
@@ -13,12 +13,13 @@ export const createPost = async (user_id, content, path, url) => {
     if (!findUser)
         throw new ErrorHandler("Unfound user, contact staff!", 500)
 
-    const response = await postsRep.savePost(user_id, content, path, url)
+    console.log(content)
+    const response = await postsRep.savePost(user_id, content/*, path, url*/)
 
     if (!response)
         throw new ErrorHandler("Database request failed!", 500)
 
-    return { username: findUser[0].username, link: url, p_content: content, post_id: response.post_id, created_at: response.created_at, likes: 0, user_id: user_id }
+    return { username: findUser[0].username, /*link: url*/ p_content: content, post_id: response.post_id, created_at: response.created_at, likes: 0, user_id: user_id }
 }
 
 export const deletePost = async (post_id, user_id) => {
