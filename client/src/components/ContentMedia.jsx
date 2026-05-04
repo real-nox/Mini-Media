@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-const link = import.meta.env.VITE_link
+const link = import.meta.env.VITE_link;
 
 export default function ContentMedia() {
-  const [currentOwner, setOwner] = useState(null);
+  const [currentOwner, setcurrentOwner] = useState(null);
   const [cursor, setCursor] = useState({});
 
   useEffect(() => {
@@ -12,9 +12,9 @@ export default function ContentMedia() {
 
   async function GetOwner() {
     try {
-      const result = await fetch(`${import.meta.env.VITE_link}/api/user`, {
+      const result = await fetch(`${link}/api/user`, {
         method: "GET",
-        credentials: "include"
+        credentials: "include",
       });
       const data = await result.json();
 
@@ -24,7 +24,7 @@ export default function ContentMedia() {
     }
   }
 
-  async function toggleMode(btn) {
+  /*async function toggleMode(btn) {
     try {
       btn.disabled = true;
       let result = await fetch("/api/modes/toggle", { method: "POST" });
@@ -108,7 +108,7 @@ export default function ContentMedia() {
     const post = await result.json();
 
     return AddPostDOM(post);
-  }
+  }*/
 
   async function AddPostDOM(post) {
     if (!post.username || post.username === "null") return;
@@ -120,7 +120,7 @@ export default function ContentMedia() {
 
   async function GetList() {
     try {
-      const resultat = await fetch("/api/posts?limit=10");
+      const resultat = await fetch(`${link}/api/posts?limit=10`);
 
       if (!resultat) return;
       const data = await resultat.json();
@@ -131,8 +131,8 @@ export default function ContentMedia() {
     }
   }
 
-  async function showList(list) {
-    const listDiv = document.getElementById("posts");
+  async function ShowList(list) {
+    const listDiv = document.getElementById("Posts");
 
     let div = ``;
     listDiv.innerHTML = "";
@@ -153,8 +153,9 @@ export default function ContentMedia() {
         `.like-btn[data-post-id="${post_id}"]`,
       );
 
-      const resultat = await fetch(`/api/post/${post_id}/like`, {
+      const resultat = await fetch(`${link}/api/post/${post_id}/like`, {
         method: "POST",
+        credentials: "include",
       });
       const data = await resultat.json();
 
@@ -175,10 +176,13 @@ export default function ContentMedia() {
     const commentsDiv = document.getElementById(`center-${post_id}`);
 
     try {
-      let url = `/api/post/${post_id}/comments?limit=5`;
+      let url = `${link}/api/post/${post_id}/comments?limit=5`;
       if (cursor[post_id]) url += `&cursor=${cursor[post_id]}`;
 
-      const resultat = await fetch(url, { method: "GET" });
+      const resultat = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
       const data = await resultat.json();
 
       const comments = data.cmt;
@@ -218,9 +222,12 @@ export default function ContentMedia() {
     const commentsDiv = document.getElementById(`center-${post_id}`);
 
     try {
-      let url = `/api/post/${post_id}/comments?limit=5`;
+      let url = `${link}/api/post/${post_id}/comments?limit=5`;
 
-      const resultat = await fetch(url, { method: "GET" });
+      const resultat = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
       const data = await resultat.json();
 
       const comments = data.cmt;
@@ -254,10 +261,11 @@ export default function ContentMedia() {
   async function deletecmt(comment_id, post_id, comment_author_id, btn) {
     btn.disabled = true;
     try {
-      const result = await fetch(`/api/comments/${post_id}`, {
+      const result = await fetch(`${link}/api/comments/${post_id}`, {
         method: "DELETE",
         body: JSON.stringify({ author_id: comment_author_id }),
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       if (result.ok) {
@@ -271,7 +279,10 @@ export default function ContentMedia() {
 
   async function deletePost(post_id) {
     try {
-      const result = await fetch(`/posts/${post_id}`, { method: "DELETE" });
+      const result = await fetch(`${link}/posts/${post_id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       if (result.ok) {
         return document.getElementById(`post-${post_id}`).remove();
@@ -284,10 +295,11 @@ export default function ContentMedia() {
   async function HasFollowed(post_owner_id) {
     try {
       console.log(post_owner_id);
-      const result = await fetch("/api/post/followed", {
+      const result = await fetch(`${link}/api/post/followed`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ post_owner_id: post_owner_id }),
+        credentials: "include",
       });
 
       if (result.ok) return await result.json();
@@ -298,11 +310,11 @@ export default function ContentMedia() {
 
   async function un_follow(user_id) {
     try {
-      console.log("here");
-      const result = await fetch("/api/post/un_follow", {
+      const result = await fetch(`${link}/api/post/un_follow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ post_owner_id: user_id }),
+        credentials: "include",
       });
 
       console.log(await result);
@@ -366,33 +378,38 @@ export default function ContentMedia() {
   }
 
   async function load() {
-    setOwner(await GetOwner());
-    console.log(owner);
+    const owner = await GetOwner();
+    if (owner) {
+      console.log(owner);
+      await setcurrentOwner(owner);
+    }
+    console.log(currentOwner);
+
     setInterval(
       async () => {
-        const list = await getList();
+        const list = await GetList();
 
         if (list) {
-          await showList(list);
+          await ShowList(list);
         }
       },
       1000 * 60 * 5,
     );
 
-    const list = await getList();
+    const list = await GetList();
 
     if (list) {
-      await showList(list);
+      await ShowList(list);
     }
 
-    document
+    /*document
       .getElementById("modesBTN")
       .addEventListener("click", async (ev) => {
         const btn = ev.target;
         await toggleMode(btn);
-      });
+      });*/
 
-    document.getElementById("posts").addEventListener("submit", async (ev) => {
+    document.getElementById("Posts").addEventListener("submit", async (ev) => {
       if (ev.target.classList.contains("add-comment-form")) {
         ev.preventDefault();
 
@@ -404,11 +421,12 @@ export default function ContentMedia() {
 
         try {
           ev.target.disabled = true;
-          const resultat = await fetch(`/api/post/${post_id}/comments`, {
+          const resultat = await fetch(`${link}/api/post/${post_id}/comments`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({ content }),
           });
 
@@ -434,7 +452,7 @@ export default function ContentMedia() {
       }
     });
 
-    document.getElementById("posts").addEventListener("click", async (ev) => {
+    document.getElementById("Posts").addEventListener("click", async (ev) => {
       //Like btn
       if (ev.target.classList.contains("like-btn")) {
         const post_id = ev.target.dataset.postId;
@@ -534,7 +552,7 @@ export default function ContentMedia() {
       }),
     );
 
-    document
+    /*document
       .getElementById("formPost")
       .addEventListener("submit", async (ev) => {
         ev.preventDefault();
@@ -572,12 +590,14 @@ export default function ContentMedia() {
 
         await un_follow(post_owner_id);
       });
-    });
+    });*/
   }
 
   return (
     <>
-      <div id="maincontainer" className="maincontainer"></div>
+      <div id="maincontainer" className="maincontainer">
+        <div id="Posts"></div>
+      </div>
     </>
   );
 }

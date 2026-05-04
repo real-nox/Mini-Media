@@ -1,6 +1,7 @@
 .CenterContainer {
     display: flex;
-    height: 92.6vh;
+    min-height: 92.6vh;
+    height: auto;
     width: 100%;
 }
 
