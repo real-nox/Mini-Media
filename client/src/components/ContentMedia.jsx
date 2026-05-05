@@ -3,12 +3,21 @@ import { useEffect, useState } from "react";
 const link = import.meta.env.VITE_link;
 
 export default function ContentMedia() {
-  const [currentOwner, setcurrentOwner] = useState(null);
+  var currentOwner = null;
+  const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState({});
 
   useEffect(() => {
-    load();
+    initializeOwner();
   }, []);
+
+  async function initializeOwner() {
+    const owner = await GetOwner();
+    if (owner) {
+      currentOwner = owner;
+      await load();
+    }
+  }
 
   async function GetOwner() {
     try {
@@ -23,92 +32,6 @@ export default function ContentMedia() {
       console.error(err);
     }
   }
-
-  /*async function toggleMode(btn) {
-    try {
-      btn.disabled = true;
-      let result = await fetch("/api/modes/toggle", { method: "POST" });
-      let data = await result.json();
-
-      const container = document.getElementById("maincontainer");
-
-      if (data && data === "dark") {
-        if (container.classList.contains("light"))
-          container.classList.remove("light");
-
-        container.classList.add("dark");
-        document.getElementById("modesBTN").innerText = "Light Mode";
-      } else {
-        if (container.classList.contains("dark"))
-          container.classList.remove("dark");
-
-        container.classList.add("light");
-        document.getElementById("modesBTN").innerText = "Dark Mode";
-      }
-
-      btn.disabled = false;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  function createpost() {
-    document.getElementById("postC").classList.toggle("hidden");
-  }
-
-  async function generateSignedUrl(file) {
-    try {
-      const result = await fetch("/api/files/upload", {
-        method: "POST",
-        body: JSON.stringify({
-          fileName: file.name,
-          type: file.type,
-          path: "PostsImg",
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (result.ok) return await result.json();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function GetPublicURL(path) {
-    const result = await fetch("/api/file/URL", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: path, folder: "PostsImg" }),
-    });
-
-    return result.json();
-  }
-
-  async function uploadFile(signedUrl, file, path) {
-    await fetch(signedUrl, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-
-    return GetPublicURL(path);
-  }
-
-  async function Createpost(url, path, content) {
-    const result = await fetch("/posts/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: content.value,
-        url: url,
-        path: path,
-      }),
-    });
-
-    const post = await result.json();
-
-    return AddPostDOM(post);
-  }*/
 
   async function AddPostDOM(post) {
     if (!post.username || post.username === "null") return;
@@ -131,22 +54,9 @@ export default function ContentMedia() {
     }
   }
 
-  async function ShowList(list) {
-    const listDiv = document.getElementById("Posts");
-
-    let div = ``;
-    listDiv.innerHTML = "";
-
-    for (const element of list) {
-      if (!element.username || element.username === "null") continue;
-      const isfollowed = await HasFollowed(element.user_id);
-      div += buildPostHTML(element, currentOwner, isfollowed);
-    }
-
-    listDiv.innerHTML = div;
-  }
-
-  async function like_dislike(post_id, btn) {
+  async function like_dislike(ev) {
+    const post_id = ev.target.dataset.postId;
+    const btn = ev.target;
     btn.disabled = true;
     try {
       const likescontent = document.querySelector(
@@ -165,6 +75,51 @@ export default function ContentMedia() {
         likescontent.dataset.likes = updated;
         likescontent.innerText = `Like ${updated}`;
       }
+      btn.disabled = false;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function show_hidecmt(ev) {
+    const post_id = ev.target.dataset.postId;
+    const btn = ev.target;
+
+    btn.disabled = true;
+    const commentsDiv = document.getElementById(`center-${post_id}`);
+
+    console.log("here")
+    try {
+      let url = `${link}/api/post/${post_id}/comments?limit=5`;
+
+      const resultat = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await resultat.json();
+
+      const comments = data.cmt;
+
+      if (comments.length > 0) {
+        cursor[post_id] = comments[comments.length - 1].created_at;
+      }
+
+      let div = "";
+      for (const comment of comments) {
+        div += `
+                <div id="comment-${comment.comment_id}">
+                    <div><a href='/${comment.username}'>${comment.username}</a></div>
+                    <div><p>${comment.p_content}</p></div>`;
+        if (
+          currentOwner === comment.p_comment_author_id ||
+          data.owner == currentOwner
+        )
+          div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-comment-id="${comment.comment_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`;
+        div += `</div>`;
+      }
+      commentsDiv.innerHTML = div;
+
+      document.getElementById(`comments-${post_id}`).classList.toggle("show");
       btn.disabled = false;
     } catch (err) {
       console.error(err);
@@ -211,47 +166,6 @@ export default function ContentMedia() {
       commentsDiv.innerHTML += div;
 
       commentsDiv.classList.add("show");
-      btn.disabled = false;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function show_hidecmt(post_id, btn) {
-    btn.disabled = true;
-    const commentsDiv = document.getElementById(`center-${post_id}`);
-
-    try {
-      let url = `${link}/api/post/${post_id}/comments?limit=5`;
-
-      const resultat = await fetch(url, {
-        method: "GET",
-        credentials: "include",
-      });
-      const data = await resultat.json();
-
-      const comments = data.cmt;
-
-      if (comments.length > 0) {
-        cursor[post_id] = comments[comments.length - 1].created_at;
-      }
-
-      let div = "";
-      for (const comment of comments) {
-        div += `
-                <div id="comment-${comment.comment_id}">
-                    <div><a href='/${comment.username}'>${comment.username}</a></div>
-                    <div><p>${comment.p_content}</p></div>`;
-        if (
-          currentOwner === comment.p_comment_author_id ||
-          data.owner == currentOwner
-        )
-          div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-comment-id="${comment.comment_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`;
-        div += `</div>`;
-      }
-      commentsDiv.innerHTML = div;
-
-      document.getElementById(`comments-${post_id}`).classList.toggle("show");
       btn.disabled = false;
     } catch (err) {
       console.error(err);
@@ -327,70 +241,95 @@ export default function ContentMedia() {
   }
 
   function buildPostHTML(post, currentOwner, isfollowed) {
-    let div = `<article id="post-${post.post_id}">
-                <div class="post">
-                    <div class="user"> 
-                        <a href="/${post.username}">${post.username}</a>`;
-
-    if (post.user_id !== currentOwner)
-      div += `<button class="follow_unfollow" data-id="${post.user_id}">${isfollowed ? "Unfollow" : "Follow"}</button>`;
-    else
-      div += `<div class="post-actions">
-                    <button class="options-btn" data-id="${post.post_id}">⋮</button>
-                    <div class="post-menu hidden" data-id="${post.post_id}">
-                        <button class="edit-btn" data-id="${post.post_id}">Edit</button>
-                        <button class="delete-btn" data-id="${post.post_id}">Delete</button>
-                    </div>
-                </div>`;
-
-    div += `</div>
-                <div class="content">`;
-
-    if (post.post_img || post.link)
-      div += `<img src="${post.post_img || post.link}" alt="image">`;
-
-    console.log(post);
-    if (post.p_content)
-      div += `<div class="contentP"><p>${post.p_content}</p></div>`;
-    div += `</div>
-                <div class="bottomarticle">
-                    <span><button class="like-btn" data-post-id="${post.post_id}" data-likes="${post.likes}">Like ${post.likes}</button></span>
-                    <span><button class="comments-btn" data-post-id="${post.post_id}">Comments</button></span>
+    return (
+      <>
+        <div className="post">
+          <div className="user">
+            <a href={`/${post.username}`}>{post.username}</a>
+            {post.user_id != currentOwner ? (
+              <button className="follow_unfollow" data-id={post.user_id}>
+                {isfollowed ? "Unfollow" : "Follow"}
+              </button>
+            ) : (
+              <div className="post-actions">
+                <button className="options-btn" data-id={post.post_id}>
+                  ⋮
+                </button>
+                <div className="post-menu hidden" data-id={post.post_id}>
+                  <button className="edit-btn" data-id={post.post_id}>
+                    Edit
+                  </button>
+                  <button className="delete-btn" data-id={post.post_id}>
+                    Delete
+                  </button>
                 </div>
-                <div id="comments-${post.post_id}" class="comments">
-                    <div class="topcmtbtn">
-                        <form class="add-comment-form" data-post-id="${post.post_id}">
-                            <span>
-                                <textarea name="comment" placeholder="Add a comment here."></textarea>
-                                <button type="submit">Send</button>
-                            </span>
-                        </form>
-                    </div>
-                    <div class="center" id="center-${post.post_id}"></div>
-                    <div class="btnplace">
-                        <button class="loadmore-btn" data-post-id="${post.post_id}">Load More</button>
-                    </div>
-                </div>
+              </div>
+            )}
+          </div>
+          <div className="content">
+            {(post.post_img || post.link) && (
+              <img src={post.post_img || post.link} alt="post image" />
+            )}
+            {post.p_content && (
+              <div className="contentP">
+                <p>{post.p_content}</p>
+              </div>
+            )}
+          </div>
+          <div className="itemsbar">
+            <div className="bottomarticle">
+              <span>
+                <button
+                  className="like-btn"
+                  data-post-id={post.post_id}
+                  data-likes={post.likes}
+                  onClick={(ev) => like_dislike(ev)}
+                >
+                  Like {post.likes}
+                </button>
+              </span>
+              <span>
+                <button
+                  className="comments-btn"
+                  data-post-id={post.post_id}
+                  onClick={(ev) => show_hidecmt(ev)}
+                >
+                  Comments
+                </button>
+              </span>
             </div>
-        </article>`;
-
-    return div;
+            <div id={`comments-${post.post_id}`} className="comments">
+              <div className="topcmtbtn">
+                <form className="add-comment-form" data-post-id={post.post_id}>
+                  <span>
+                    <textarea
+                      name="comment"
+                      placeholder="Add a comment here."
+                    ></textarea>
+                    <button type="submit">Send</button>
+                  </span>
+                </form>
+              </div>
+              <div className="center" id={`center-${post.post_id}`}></div>
+              <div className="btnplace">
+                <button className="loadmore-btn" data-post-id={post.post_id}>
+                  Load More
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
   }
 
   async function load() {
-    const owner = await GetOwner();
-    if (owner) {
-      console.log(owner);
-      await setcurrentOwner(owner);
-    }
-    console.log(currentOwner);
-
     setInterval(
       async () => {
         const list = await GetList();
 
         if (list) {
-          await ShowList(list);
+          setPosts(list);
         }
       },
       1000 * 60 * 5,
@@ -399,15 +338,8 @@ export default function ContentMedia() {
     const list = await GetList();
 
     if (list) {
-      await ShowList(list);
+      setPosts(list);
     }
-
-    /*document
-      .getElementById("modesBTN")
-      .addEventListener("click", async (ev) => {
-        const btn = ev.target;
-        await toggleMode(btn);
-      });*/
 
     document.getElementById("Posts").addEventListener("submit", async (ev) => {
       if (ev.target.classList.contains("add-comment-form")) {
@@ -454,18 +386,8 @@ export default function ContentMedia() {
 
     document.getElementById("Posts").addEventListener("click", async (ev) => {
       //Like btn
-      if (ev.target.classList.contains("like-btn")) {
-        const post_id = ev.target.dataset.postId;
-        const btn = ev.target;
-        await like_dislike(post_id, btn);
-      }
 
       //Comments btn
-      if (ev.target.classList.contains("comments-btn")) {
-        const post_id = ev.target.dataset.postId;
-        const btn = ev.target;
-        await show_hidecmt(post_id, btn);
-      }
 
       //Load more btn
       if (ev.target.classList.contains("loadmore-btn")) {
@@ -551,52 +473,18 @@ export default function ContentMedia() {
         await deletePost(post_id);
       }),
     );
-
-    /*document
-      .getElementById("formPost")
-      .addEventListener("submit", async (ev) => {
-        ev.preventDefault();
-
-        const fileInput = document.getElementById("image");
-        const file = fileInput.files[0];
-
-        const content = document.getElementById("content");
-
-        let result = null;
-        let signedUrl,
-          path = null;
-        if (file) {
-          if (!(file.size / 1024 / 1024 < 1)) return alert("Large image!");
-
-          (signedUrl, (path = await generateSignedUrl(file)));
-
-          result = await uploadFile(signedUrl, file, path);
-        }
-
-        await Createpost(
-          result?.publicUrl ? result?.publicUrl : null,
-          path,
-          content,
-        );
-
-        content.innerText = "";
-        fileInput.innerHTML = "";
-        document.getElementById("postC").classList.toggle("hidden");
-      });
-
-    document.querySelectorAll(".follow_unfollow").forEach((btn) => {
-      btn.addEventListener("click", async (ev) => {
-        const post_owner_id = btn.dataset.id;
-
-        await un_follow(post_owner_id);
-      });
-    });*/
   }
 
   return (
     <>
       <div id="maincontainer" className="maincontainer">
-        <div id="Posts"></div>
+        <div id="Posts">
+          {posts.map((post) => (
+            <article key={`post-${post.post_id}`}>
+              {buildPostHTML(post, currentOwner, false)}
+            </article>
+          ))}
+        </div>
       </div>
     </>
   );

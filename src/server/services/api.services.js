@@ -19,6 +19,7 @@ export const Lposts = async (limit) => {
 
 export const Like = async (liker, post_id) => {
 
+    console.log(post_id, liker)
     if (!post_id || !liker)
         throw new ErrorHandler("Something unexpected happened!", 500)
 

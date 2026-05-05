@@ -6,6 +6,10 @@
 }
 
 .SideBarContainer {
+    position: fixed;
+    z-index: 1;
+    top: 7%;
+    height: 95%;
     width: 20%;
     background-color: rgb(53, 53, 53);
     display: flex;
@@ -72,4 +76,96 @@
 
 .formPost .p.green {
     color: rgb(0, 165, 74);
+}
+
+.maincontainer {
+    position: absolute;
+    top: 5%;
+    left: 15%;
+    display: flex;
+    justify-content: center;
+    padding: 50px 0px;
+    width: 85%;
+    gap: 10px;
+}
+
+/* Posts */
+
+#Posts {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 90%;
+}
+
+#Posts article {
+    background-color: rgb(90, 90, 90);
+    border-radius: 10px;
+    padding: 25px 25px;
+    width: 50%;
+}
+
+#Posts article .post {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#Posts article .post .user {
+    display: flex;
+    justify-content: space-between;
+}
+
+.user a {
+    color: rgb(255, 238, 238);
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: end;
+}
+
+.post-menu.hidden {
+    display: none;
+}
+
+.post-menu {
+    display: block;
+}
+
+.post .content {
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.post .content img {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 50%;
+}
+
+.post .bottomarticle {
+    width: 100%;
+    display: flex;
+}
+
+.post .comments {
+    display: none;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.post .comments.show {
+    opacity: 1;
+    display: block;
+    transition: all 0.5s ease;
 }

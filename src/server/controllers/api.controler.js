@@ -85,6 +85,8 @@ export const LikePost = async (req, res, next) => {
     const post_id = req.params.post
     const liker = req.user.user_id
 
+    console.log(liker, post_id)
+
     if (!post_id || !liker)
         throw new ErrorHandler("Inspecified post_id/liker", 400)
 
