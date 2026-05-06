@@ -1,6 +1,6 @@
-import ContentMedia from "../components/ContentMedia";
-import SidebarComponent from "../components/Sidebar";
 import "../css/User.css";
+import ContentMedia from "./components/ContentMedia";
+import SidebarComponent from "./components/Sidebar";
 
 export default function HomePage() {
   return (

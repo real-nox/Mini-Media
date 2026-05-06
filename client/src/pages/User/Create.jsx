@@ -1,7 +1,6 @@
 import { useState } from "react";
-import SidebarComponent from "../../components/Sidebar";
-import TopbarComponent from "../../components/Topbar";
 import { useNavigate } from "react-router-dom";
+import TopbarComponent from "../components/Topbar";
 
 export default function CreatePost({ user }) {
   const [title, setTitle] = useState("");

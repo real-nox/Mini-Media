@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import TopbarComponent from "../../components/Topbar";
 import { useNavigate } from "react-router-dom";
+import TopbarComponent from "../components/Topbar";
 
 function LoginPage({ user }) {
   const [password, setPassword] = useState("");

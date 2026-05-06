@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import LoginPage from "./pages/Auth/Login";
 import RegisterPage from "./pages/Auth/Register";
-import TopbarComponent from "./components/Topbar";
 
 import "./css/App.css";
 import "./css/Guest.css"

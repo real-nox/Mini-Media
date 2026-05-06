@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TopbarComponent from "../../components/Topbar";
+import TopbarComponent from "../components/Topbar";
 
 function RegisterPage({user}) {
   const [display_name, setDisplay] = useState("");

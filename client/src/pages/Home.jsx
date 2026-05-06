@@ -1,4 +1,4 @@
-import TopbarComponent from "../components/Topbar";
+import TopbarComponent from "./components/Topbar";
 import GuestPage from "./Guest";
 import HomePage from "./Homepage";
 

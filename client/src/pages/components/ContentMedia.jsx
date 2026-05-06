@@ -3,18 +3,29 @@ import { useEffect, useState } from "react";
 const link = import.meta.env.VITE_link;
 
 export default function ContentMedia() {
-  var currentOwner = null;
+  const [currentOwner, setcurrentOwner] = useState(null);
   const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState({});
+  const [following, setFollowing] = useState({})
 
   useEffect(() => {
     initializeOwner();
   }, []);
 
+  useEffect(() => {
+    const user = [...new Set(posts.map(post => post.user_id))]
+  
+    user.forEach(user_id => {
+      if (following[user_id] === undefined) {
+        HasFollowed(user_id);
+      }
+    })
+}, [posts]);
+
   async function initializeOwner() {
     const owner = await GetOwner();
     if (owner) {
-      currentOwner = owner;
+      setcurrentOwner(owner);
       await load();
     }
   }
@@ -31,14 +42,6 @@ export default function ContentMedia() {
     } catch (err) {
       console.error(err);
     }
-  }
-
-  async function AddPostDOM(post) {
-    if (!post.username || post.username === "null") return;
-    const listDiv = document.getElementById("posts");
-    const isfollowed = await HasFollowed(post.user_id);
-    listDiv.innerHTML =
-      buildPostHTML(post, currentOwner, isfollowed) + listDiv.innerHTML;
   }
 
   async function GetList() {
@@ -88,7 +91,6 @@ export default function ContentMedia() {
     btn.disabled = true;
     const commentsDiv = document.getElementById(`center-${post_id}`);
 
-    console.log("here")
     try {
       let url = `${link}/api/post/${post_id}/comments?limit=5`;
 
@@ -216,7 +218,12 @@ export default function ContentMedia() {
         credentials: "include",
       });
 
-      if (result.ok) return await result.json();
+      const data = await result.json();
+      setFollowing((prev) => ({
+        ...prev,
+        [post_owner_id]: data
+      }))
+      return
     } catch (err) {
       console.error(err);
     }
@@ -235,19 +242,30 @@ export default function ContentMedia() {
       const data = await result.json();
 
       if (data) console.log(data);
+      setFollowing(prev => ({
+        ...prev,
+        [user_id]: data
+      }))
     } catch (err) {
       console.error(err);
     }
   }
 
   function buildPostHTML(post, currentOwner, isfollowed) {
+    console.log("follow", isfollowed)
     return (
       <>
         <div className="post">
           <div className="user">
             <a href={`/${post.username}`}>{post.username}</a>
             {post.user_id != currentOwner ? (
-              <button className="follow_unfollow" data-id={post.user_id}>
+              <button
+                className="follow_unfollow"
+                data-id={post.user_id}
+                onClick={() => {
+                  un_follow(post.user_id);
+                }}
+              >
                 {isfollowed ? "Unfollow" : "Follow"}
               </button>
             ) : (
@@ -481,7 +499,7 @@ export default function ContentMedia() {
         <div id="Posts">
           {posts.map((post) => (
             <article key={`post-${post.post_id}`}>
-              {buildPostHTML(post, currentOwner, false)}
+              {buildPostHTML(post, currentOwner, following[post.user_id])}
             </article>
           ))}
         </div>
