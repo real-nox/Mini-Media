@@ -6,21 +6,21 @@ export default function ContentMedia() {
   const [currentOwner, setcurrentOwner] = useState(null);
   const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState({});
-  const [following, setFollowing] = useState({})
+  const [following, setFollowing] = useState({});
 
   useEffect(() => {
     initializeOwner();
   }, []);
 
   useEffect(() => {
-    const user = [...new Set(posts.map(post => post.user_id))]
-  
-    user.forEach(user_id => {
+    const user = [...new Set(posts.map((post) => post.user_id))];
+
+    user.forEach((user_id) => {
       if (following[user_id] === undefined) {
         HasFollowed(user_id);
       }
-    })
-}, [posts]);
+    });
+  }, [posts]);
 
   async function initializeOwner() {
     const owner = await GetOwner();
@@ -128,6 +128,47 @@ export default function ContentMedia() {
     }
   }
 
+  async function SubmitComment(ev) {
+    ev.preventDefault();
+
+    const form = ev.target;
+
+    const post_id = form.dataset.postId;
+    const textarea = form.querySelector("textarea");
+    const content = textarea.value;
+
+    try {
+      ev.target.disabled = true;
+      const resultat = await fetch(`${link}/api/post/${post_id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ content }),
+      });
+
+      const data = await resultat.json();
+
+      if (resultat.ok) {
+        const commentsdiv = form.closest(".comments");
+        const divcomment = document.createElement("div");
+
+        divcomment.innerHTML = `<div id="comment-${data.user.user_id}-${data.post_id}">
+                                <div><a href='/${data.user.username}'>${data.user.username}</a></div>
+                                <div><p>${data.content}</p>
+                            </div>`;
+
+        commentsdiv.append(divcomment);
+
+        textarea.value = "";
+      }
+      ev.target.disabled = false;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async function loadmore(post_id, btn) {
     btn.disabled = true;
     const commentsDiv = document.getElementById(`center-${post_id}`);
@@ -221,9 +262,9 @@ export default function ContentMedia() {
       const data = await result.json();
       setFollowing((prev) => ({
         ...prev,
-        [post_owner_id]: data
-      }))
-      return
+        [post_owner_id]: data,
+      }));
+      return;
     } catch (err) {
       console.error(err);
     }
@@ -242,17 +283,17 @@ export default function ContentMedia() {
       const data = await result.json();
 
       if (data) console.log(data);
-      setFollowing(prev => ({
+      setFollowing((prev) => ({
         ...prev,
-        [user_id]: data
-      }))
+        [user_id]: data,
+      }));
     } catch (err) {
       console.error(err);
     }
   }
 
   function buildPostHTML(post, currentOwner, isfollowed) {
-    console.log("follow", isfollowed)
+    console.log("follow", isfollowed);
     return (
       <>
         <div className="post">
@@ -318,7 +359,7 @@ export default function ContentMedia() {
             </div>
             <div id={`comments-${post.post_id}`} className="comments">
               <div className="topcmtbtn">
-                <form className="add-comment-form" data-post-id={post.post_id}>
+                <form className="add-comment-form" data-post-id={post.post_id} onSubmit={(ev) => SubmitComment(ev)}>
                   <span>
                     <textarea
                       name="comment"
@@ -359,7 +400,7 @@ export default function ContentMedia() {
       setPosts(list);
     }
 
-    document.getElementById("Posts").addEventListener("submit", async (ev) => {
+    /*document.getElementById("Posts").addEventListener("submit", async (ev) => {
       if (ev.target.classList.contains("add-comment-form")) {
         ev.preventDefault();
 
@@ -400,7 +441,7 @@ export default function ContentMedia() {
           console.error(err);
         }
       }
-    });
+    });*/
 
     document.getElementById("Posts").addEventListener("click", async (ev) => {
       //Like btn
