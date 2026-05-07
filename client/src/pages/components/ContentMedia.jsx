@@ -4,6 +4,7 @@ const link = import.meta.env.VITE_link;
 
 export default function ContentMedia() {
   const [currentOwner, setcurrentOwner] = useState(null);
+  const [comments, setComments] = useState({});
   const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState({});
   const [following, setFollowing] = useState({});
@@ -100,26 +101,21 @@ export default function ContentMedia() {
       });
       const data = await resultat.json();
 
-      const comments = data.cmt;
+      console.log(data);
 
-      if (comments.length > 0) {
+      const cmts = data.cmt;
+      const owner = data.owner;
+
+      setComments((prev) => ({
+        ...prev,
+        [post_id]: cmts,
+      }));
+
+      console.log(comments);
+
+      /*if (comments.length > 0) {
         cursor[post_id] = comments[comments.length - 1].created_at;
-      }
-
-      let div = "";
-      for (const comment of comments) {
-        div += `
-                <div id="comment-${comment.comment_id}">
-                    <div><a href='/${comment.username}'>${comment.username}</a></div>
-                    <div><p>${comment.p_content}</p></div>`;
-        if (
-          currentOwner === comment.p_comment_author_id ||
-          data.owner == currentOwner
-        )
-          div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-comment-id="${comment.comment_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`;
-        div += `</div>`;
-      }
-      commentsDiv.innerHTML = div;
+      }*/
 
       document.getElementById(`comments-${post_id}`).classList.toggle("show");
       btn.disabled = false;
@@ -150,7 +146,14 @@ export default function ContentMedia() {
 
       const data = await resultat.json();
 
-      if (resultat.ok) {
+      const comment = data.cmt;
+
+      setComments((prev) => ({
+        ...prev,
+        [post_id]: [...(prev[post_id] || []), comment],
+      }));
+
+      /*if (resultat.ok) {
         const commentsdiv = form.closest(".comments");
         const divcomment = document.createElement("div");
 
@@ -162,7 +165,7 @@ export default function ContentMedia() {
         commentsdiv.append(divcomment);
 
         textarea.value = "";
-      }
+      }*/
       ev.target.disabled = false;
     } catch (err) {
       console.error(err);
@@ -215,7 +218,12 @@ export default function ContentMedia() {
     }
   }
 
-  async function deletecmt(comment_id, post_id, comment_author_id, btn) {
+  async function DeleteComment(ev) {
+    const post_id = ev.target.dataset.postId;
+    const author_id = ev.target.dataset.authorId;
+    const comment_id = ev.target.dataset.commentId;
+    const btn = ev.target;
+
     btn.disabled = true;
     try {
       const result = await fetch(`${link}/api/comments/${post_id}`, {
@@ -292,8 +300,38 @@ export default function ContentMedia() {
     }
   }
 
+  function buildCommentsHTML(post_id, owner, comment, currentOwner) {
+    return (
+      <>
+        <div
+          key={`comment-${comment.comment_id}`}
+          id={`comment-${comment.comment_id}`}
+        >
+          <div>
+            <a href="/${comment.username}">{comment.username}</a>
+          </div>
+          <div>
+            <p>{comment.p_content}</p>
+          </div>
+          {currentOwner == comment.p_comment_author_id ||
+          owner == currentOwner ? (
+            <div>
+              <button
+                className="delete-cmt-btn"
+                data-post-id={post_id}
+                data-comment-id={comment.comment_id}
+                data-author-id={comment.p_comment_author_id}
+              >
+                Delete
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </>
+    );
+  }
+
   function buildPostHTML(post, currentOwner, isfollowed) {
-    console.log("follow", isfollowed);
     return (
       <>
         <div className="post">
@@ -359,7 +397,11 @@ export default function ContentMedia() {
             </div>
             <div id={`comments-${post.post_id}`} className="comments">
               <div className="topcmtbtn">
-                <form className="add-comment-form" data-post-id={post.post_id} onSubmit={(ev) => SubmitComment(ev)}>
+                <form
+                  className="add-comment-form"
+                  data-post-id={post.post_id}
+                  onSubmit={(ev) => SubmitComment(ev)}
+                >
                   <span>
                     <textarea
                       name="comment"
@@ -369,9 +411,21 @@ export default function ContentMedia() {
                   </span>
                 </form>
               </div>
+              {comments[post.post_id]?.map((comment) =>
+                buildCommentsHTML(
+                  post.post_id,
+                  comment.p_comment_author_id,
+                  comment,
+                  currentOwner,
+                ),
+              )}
               <div className="center" id={`center-${post.post_id}`}></div>
               <div className="btnplace">
-                <button className="loadmore-btn" data-post-id={post.post_id}>
+                <button
+                  className="loadmore-btn"
+                  data-post-id={post.post_id}
+                  onClick={(ev) => show_hidecmt(ev)}
+                >
                   Load More
                 </button>
               </div>
@@ -400,49 +454,6 @@ export default function ContentMedia() {
       setPosts(list);
     }
 
-    /*document.getElementById("Posts").addEventListener("submit", async (ev) => {
-      if (ev.target.classList.contains("add-comment-form")) {
-        ev.preventDefault();
-
-        const form = ev.target;
-
-        const post_id = form.dataset.postId;
-        const textarea = form.querySelector("textarea");
-        const content = textarea.value;
-
-        try {
-          ev.target.disabled = true;
-          const resultat = await fetch(`${link}/api/post/${post_id}/comments`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({ content }),
-          });
-
-          const data = await resultat.json();
-
-          if (resultat.ok) {
-            const commentsdiv = form.closest(".comments");
-            const divcomment = document.createElement("div");
-
-            divcomment.innerHTML = `<div id="comment-${data.user.user_id}-${data.post_id}">
-                                <div><a href='/${data.user.username}'>${data.user.username}</a></div>
-                                <div><p>${data.content}</p>
-                            </div>`;
-
-            commentsdiv.append(divcomment);
-
-            textarea.value = "";
-          }
-          ev.target.disabled = false;
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    });*/
-
     document.getElementById("Posts").addEventListener("click", async (ev) => {
       //Like btn
 
@@ -456,14 +467,14 @@ export default function ContentMedia() {
       }
 
       //Delete Cmt btn
-      if (ev.target.classList.contains("delete-cmt-btn")) {
+      /*if (ev.target.classList.contains("delete-cmt-btn")) {
         const post_id = ev.target.dataset.postId;
         const author_id = ev.target.dataset.authorId;
         const comment_id = ev.target.dataset.commentId;
         const btn = ev.target;
 
         await deletecmt(comment_id, post_id, author_id, btn);
-      }
+      }*/
     });
 
     document.querySelectorAll(".options-btn").forEach((opt_btn) =>
