@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { login, logout, refresh, singin } from "../controllers/login.controler.js"
+import { login, logout, refresh, singin } from "../controllers/login.controller.js"
 import { userLM } from "../middlewares/user_login.js"
 import { isAuth, auth } from "../middlewares/sessions.js"
 import { authRate } from "../middlewares/rate-limit.js"

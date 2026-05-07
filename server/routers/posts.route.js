@@ -1,6 +1,6 @@
 import {Router} from "express"
 import { auth } from "../middlewares/sessions.js"
-import { postCreate, PostDelete, PostPut } from "../controllers/posts.controler.js"
+import { postCreate, PostDelete, PostPut } from "../controllers/posts.controller.js"
 import { modes } from "../middlewares/user_login.js"
 import { postsRate } from "../middlewares/rate-limit.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"

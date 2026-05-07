@@ -1,5 +1,6 @@
-import { config } from "dotenv"; config({quiet:true})
 import { Pool } from "pg"
+import { config } from "dotenv"
+config({override:true, quiet:true})
 
 const client = await new Pool({
     database: process.env.database,

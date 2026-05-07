@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { auth } from "../middlewares/sessions.js"
-import { CommentsAdd, CommentsDelete, CommentsGet, DeleteAvatar, Followed, Following, generateURL, getURL, LikePost, modeApi, postsList } from "../controllers/api.controler.js"
+import { CommentsAdd, CommentsDelete, CommentsGet, DeleteAvatar, Followed, Following, generateURL, getURL, LikePost, modeApi, postsList } from "../controllers/api.controller.js"
 import { authRate, commentsRate, followingRate, likesRate, postsRate } from "../middlewares/rate-limit.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"
 

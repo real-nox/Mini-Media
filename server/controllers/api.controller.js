@@ -1,5 +1,5 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
-import * as apiServices from "../services/api.services.js"
+import * as apiServices from "../services/api.service.js"
 
 export const modeApi = (req, res, next) => {
     let mode = "light"

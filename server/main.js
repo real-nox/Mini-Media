@@ -1,34 +1,35 @@
+import cookieParser from "cookie-parser";
 import express from "express"
 import cors from "cors"
 
-import { join, dirname } from "path"; import { fileURLToPath } from "url"
+import { config } from "dotenv"
+config({override:true, quiet:true})
 
-import cookieParser from "cookie-parser";
+import { join, dirname } from "path"; 
+import { fileURLToPath } from "url"
 
-import loginR from "./routers/login.js";
-import { auth } from "./middlewares/sessions.js";
-import userR from "./routers/user.js";
-import { modes } from "./middlewares/user_login.js";
-import api from "./routers/api.js";
-import postR from "./routers/posts.js";
 import sp from "./db/supabase.js";
-import messagesR from "./routers/messages.js";
+
+import loginR from "./routers/login.route.js";
+import userR from "./routers/user.route.js";
+import api from "./routers/api.route.js";
+import postR from "./routers/posts.route.js";
+import messagesR from "./routers/messages.route.js";
+
+import { auth } from "./middlewares/sessions.js";
+import { modes } from "./middlewares/user_login.js";
 
 const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true
 }))
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
-
-app.set("view engine", "ejs")
-app.set("views", join(__dirname, "../client/views"))
-
-app.use(express.static(join(__dirname, "../client/public")))
 
 app.get("/", modes, auth, (req, res) => {
     const user = req?.user
@@ -59,6 +60,6 @@ app.use((err, req, res, next) => {
     next()
 })
 
-app.listen(5000, () => {
-    console.info("Running on http://localhost:5000")
+app.listen(process.env.port, () => {
+    console.info("Running on http://localhost:" + process.env.port)
 })

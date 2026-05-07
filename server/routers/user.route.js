@@ -1,9 +1,9 @@
 import { Router } from "express"
 import { auth } from "../middlewares/sessions.js"
 import { modes } from "../middlewares/user_login.js"
-import { Getfollowers, Getfollowings, GetUser, UpdateUser, User } from "../controllers/user.controler.js"
+import { Getfollowers, Getfollowings, GetUser, UpdateUser, User } from "../controllers/user.controller.js"
 import { asyncHandler } from "../middlewares/errorsHandler.js"
-import { Following } from "../controllers/api.controler.js"
+import { Following } from "../controllers/api.controller.js"
 
 const userR = Router()
 
