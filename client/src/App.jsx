@@ -8,6 +8,7 @@ import RegisterPage from "./pages/Auth/Register";
 import "./css/App.css";
 import "./css/Guest.css"
 import CreatePost from "./pages/User/Create";
+import Settings from "./pages/User/Settings";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -38,7 +39,8 @@ function App() {
         <Route path="/" element={<Home user={user} />}/>
         <Route path="/login" element={<LoginPage user={user} />} />
         <Route path="/register" element={<RegisterPage user={user} /> }/>
-        <Route path="/create-post" element={<CreatePost user={useEffect} />}/>
+        <Route path="/create-post" element={<CreatePost user={user} />}/>
+        <Route path="/settings" element={<Settings user={user}/>}/>
       </Routes>
     </BrowserRouter>
   );

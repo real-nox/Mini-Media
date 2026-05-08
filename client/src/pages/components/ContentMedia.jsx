@@ -546,6 +546,11 @@ export default function ContentMedia() {
             </article>
           ))}
         </div>
+        <div>
+          <footer>
+            Mini Media - 2026 &copy;
+          </footer>
+        </div>
       </div>
     </>
   );

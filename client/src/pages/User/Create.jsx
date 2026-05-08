@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopbarComponent from "../components/Topbar";
+import SidebarComponent from "../components/Sidebar";
 
 export default function CreatePost({ user }) {
   const [title, setTitle] = useState("");
@@ -49,8 +50,8 @@ export default function CreatePost({ user }) {
   return (
     <>
       <TopbarComponent user={user} />
+      <SidebarComponent />
       <div className="CenterContainer">
-        <SidebarComponent />
         <div className="CreatePost">
           <div className="PostForm" onSubmit={(ev) => submitPost(ev)}>
             <form className="formPost">

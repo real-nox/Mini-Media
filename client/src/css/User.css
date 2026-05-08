@@ -10,7 +10,7 @@
     z-index: 1;
     top: 7%;
     height: 95%;
-    width: 20%;
+    width: 15%;
     background-color: rgb(53, 53, 53);
     display: flex;
     flex-direction: column;
@@ -78,15 +78,18 @@
     color: rgb(0, 165, 74);
 }
 
+.CreatePost,
 .maincontainer {
-    position: absolute;
-    top: 5%;
+    position: fixed;
+    top: 7.2%;
     left: 15%;
     display: flex;
-    justify-content: center;
-    padding: 50px 0px;
+    flex-direction: column;
+    align-items: center;
     width: 85%;
     gap: 10px;
+    height: calc(95vh - 7.2%);
+    overflow-y: auto;
 }
 
 /* Posts */
@@ -96,8 +99,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
     width: 90%;
+    margin: 50px;
 }
 
 #Posts article {
