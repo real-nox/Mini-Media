@@ -1,6 +1,6 @@
 import ErrorHandler from "../middlewares/errorsHandler.js"
 import { hasIdUser } from "../repositories/login.repositories.js"
-import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
+import { addcmt, addLike, delcmt, delpost, get_like, getcmt, getPost, GetUserComment, listPosts, putpost, removeLike } from "../repositories/posts.repositories.js"
 import { delFile, FetchURLFile, URLGenerateFile } from "../repositories/supabase.repositories.js"
 import { Follow, GetFollower, Unfollow } from "../repositories/user.repositories.js"
 
@@ -54,6 +54,20 @@ export const Getcomments = async (post_id, limit, cursor) => {
     return { owner: foundpost[0].post_owner_id, cmt: comment }
 }
 
+export const Getcomment = async (post_id, comment_author_id, comment_id) => {
+    const foundpost = await getPost(post_id)
+
+    if (!foundpost || foundpost.length === 0)
+        throw new ErrorHandler("Post not found!", 404)
+
+    const comment = await GetUserComment(post_id, comment_author_id, comment_id)
+
+    if (!comment)
+        throw new ErrorHandler("Comment not found!", 404)
+
+    return { owner: foundpost[0].post_owner_id, cmt: comment }
+}
+
 export const AddComment = async (post_id, user_id, content) => {
     const foundpost = await getPost(post_id)
 
@@ -73,7 +87,7 @@ export const AddComment = async (post_id, user_id, content) => {
     return findUser[0].username
 }
 
-export const DeleteComment = async (post_id, user_id) => {
+export const DeleteComment = async (post_id, user_id, comment_id) => {
     const foundpost = await getPost(post_id)
 
     if (!foundpost || foundpost.length === 0)
@@ -84,7 +98,12 @@ export const DeleteComment = async (post_id, user_id) => {
     if (!findUser)
         throw new ErrorHandler("User not found!", 404)
 
-    const isDeleted = await delcmt(post_id, user_id)
+    const findComment = await Getcomment(post_id, user_id, comment_id)
+
+    if (!findComment)
+        throw new ErrorHandler("Infound comment", 404)
+
+    const isDeleted = await delcmt(post_id, user_id, comment_id)
 
     if (!isDeleted)
         throw new ErrorHandler("Database request failed!", 500)

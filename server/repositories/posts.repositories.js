@@ -66,6 +66,15 @@ export const getcmt = async (post_id, limit, cursor) => {
     return result.rows
 }
 
+export const GetUserComment = async (post_id, comment_author_id, comment_id) => {
+    const result = await query(`
+        select * from post_comments where post_id = $1 and p_comment_author_id = $2 and comment_id = $3`, [post_id, comment_author_id, comment_id])
+
+    if (result.rowCount > 0)
+        return true
+    return false
+}
+
 export const getPost = async (post_id) => {
     const result = await query("select * from posts where post_id = $1", [post_id])
 
@@ -83,8 +92,8 @@ export const addcmt = async (post_id, user_id, content) => {
     return false
 }
 
-export const delcmt = async (post_id, user_id) => {
-    const result = await query("delete from post_comments where post_id = $1 and p_comment_author_id = $2", [post_id, user_id])
+export const delcmt = async (post_id, user_id, comment_id) => {
+    const result = await query("delete from post_comments where post_id = $1 and p_comment_author_id = $2 and comment_id = $3", [post_id, user_id, comment_id])
 
     if (result?.rowCount)
         return true

@@ -123,13 +123,13 @@ export const CommentsAdd = async (req, res, next) => {
 
 export const CommentsDelete = async (req, res, next) => {
     const post_id = req.params.post
-    const user_id = req.params.author_id
     const comment_author_id = req.body.author_id
+    const comment_id = req.body.comment_id
 
-    if (!post_id || !user_id || !comment_author_id)
+    if (!post_id || !comment_author_id || !comment_id)
         throw new ErrorHandler("Inspecified post_id/user_id", 400)
 
-    const result = await apiServices.DeleteComment(post_id, user_id)
+    const result = await apiServices.DeleteComment(post_id, comment_author_id, comment_id)
 
     return res.json(result)
 }

@@ -153,19 +153,6 @@ export default function ContentMedia() {
         [post_id]: [...(prev[post_id] || []), comment],
       }));
 
-      /*if (resultat.ok) {
-        const commentsdiv = form.closest(".comments");
-        const divcomment = document.createElement("div");
-
-        divcomment.innerHTML = `<div id="comment-${data.user.user_id}-${data.post_id}">
-                                <div><a href='/${data.user.username}'>${data.user.username}</a></div>
-                                <div><p>${data.content}</p>
-                            </div>`;
-
-        commentsdiv.append(divcomment);
-
-        textarea.value = "";
-      }*/
       ev.target.disabled = false;
     } catch (err) {
       console.error(err);
@@ -228,14 +215,19 @@ export default function ContentMedia() {
     try {
       const result = await fetch(`${link}/api/comments/${post_id}`, {
         method: "DELETE",
-        body: JSON.stringify({ author_id: comment_author_id }),
+        body: JSON.stringify({ author_id, comment_id }),
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
 
       if (result.ok) {
         btn.disabled = false;
-        return document.getElementById(`comment-${comment_id}`).remove();
+        setComments((prev) => ({
+          ...prev,
+          [post_id]: prev[post_id].filter(
+            (cmt) => cmt.comment_id !== comment_id,
+          ),
+        }));
       }
     } catch (err) {
       console.error(err);
@@ -302,32 +294,31 @@ export default function ContentMedia() {
 
   function buildCommentsHTML(post_id, owner, comment, currentOwner) {
     return (
-      <>
-        <div
-          key={`comment-${comment.comment_id}`}
-          id={`comment-${comment.comment_id}`}
-        >
-          <div>
-            <a href="/${comment.username}">{comment.username}</a>
-          </div>
-          <div>
-            <p>{comment.p_content}</p>
-          </div>
-          {currentOwner == comment.p_comment_author_id ||
-          owner == currentOwner ? (
-            <div>
-              <button
-                className="delete-cmt-btn"
-                data-post-id={post_id}
-                data-comment-id={comment.comment_id}
-                data-author-id={comment.p_comment_author_id}
-              >
-                Delete
-              </button>
-            </div>
-          ) : null}
+      <div
+        key={`comment-${comment.comment_id}`}
+        id={`comment-${comment.comment_id}`}
+      >
+        <div>
+          <a href="/${comment.username}">{comment.username}</a>
         </div>
-      </>
+        <div>
+          <p>{comment.p_content}</p>
+        </div>
+        {currentOwner == comment.p_comment_author_id ||
+        owner == currentOwner ? (
+          <div>
+            <button
+              className="delete-cmt-btn"
+              data-post-id={post_id}
+              data-comment-id={comment.comment_id}
+              data-author-id={comment.p_comment_author_id}
+              onClick={(ev) => DeleteComment(ev)}
+            >
+              Delete
+            </button>
+          </div>
+        ) : null}
+      </div>
     );
   }
 
@@ -412,12 +403,12 @@ export default function ContentMedia() {
                 </form>
               </div>
               {comments[post.post_id]?.map((comment) =>
-                buildCommentsHTML(
+                comment ? buildCommentsHTML(
                   post.post_id,
                   comment.p_comment_author_id,
                   comment,
                   currentOwner,
-                ),
+                ) : null
               )}
               <div className="center" id={`center-${post.post_id}`}></div>
               <div className="btnplace">

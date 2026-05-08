@@ -16,6 +16,6 @@ try {
     console.error(err)
 }
 
-const query = (instruction, arg) => client.query(instruction, arg)
+const query = async (instruction, arg) => await client.query(instruction, arg)
 
 export default query;
