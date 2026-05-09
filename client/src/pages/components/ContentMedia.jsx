@@ -85,13 +85,7 @@ export default function ContentMedia() {
     }
   }
 
-  async function show_hidecmt(ev) {
-    const post_id = ev.target.dataset.postId;
-    const btn = ev.target;
-
-    btn.disabled = true;
-    const commentsDiv = document.getElementById(`center-${post_id}`);
-
+  async function GetComments(post_id) {
     try {
       let url = `${link}/api/post/${post_id}/comments?limit=5`;
 
@@ -101,8 +95,6 @@ export default function ContentMedia() {
       });
       const data = await resultat.json();
 
-      console.log(data);
-
       const cmts = data.cmt;
       const owner = data.owner;
 
@@ -111,17 +103,26 @@ export default function ContentMedia() {
         [post_id]: cmts,
       }));
 
-      console.log(comments);
-
-      /*if (comments.length > 0) {
-        cursor[post_id] = comments[comments.length - 1].created_at;
-      }*/
-
-      document.getElementById(`comments-${post_id}`).classList.toggle("show");
-      btn.disabled = false;
+      setCursor((prev) => ({
+        ...prev,
+        [post_id]: cmts[cmts.length - 1].created_at,
+      }));
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async function show_hidecmt(ev) {
+    const post_id = ev.target.dataset.postId;
+    const btn = ev.target;
+
+    btn.disabled = true;
+    const commentsDiv = document.getElementById(`center-${post_id}`);
+
+    await GetComments(post_id);
+
+    document.getElementById(`comments-${post_id}`).classList.toggle("show");
+    btn.disabled = false;
   }
 
   async function SubmitComment(ev) {
@@ -148,10 +149,7 @@ export default function ContentMedia() {
 
       const comment = data.cmt;
 
-      setComments((prev) => ({
-        ...prev,
-        [post_id]: [...(prev[post_id] || []), comment],
-      }));
+      await GetComments(post_id);
 
       ev.target.disabled = false;
     } catch (err) {
@@ -159,7 +157,9 @@ export default function ContentMedia() {
     }
   }
 
-  async function loadmore(post_id, btn) {
+  async function loadmore(ev) {
+    const post_id = ev.target.dataset.postId;
+    const btn = ev.target;
     btn.disabled = true;
     const commentsDiv = document.getElementById(`center-${post_id}`);
 
@@ -167,6 +167,7 @@ export default function ContentMedia() {
       let url = `${link}/api/post/${post_id}/comments?limit=5`;
       if (cursor[post_id]) url += `&cursor=${cursor[post_id]}`;
 
+      console.log(url);
       const resultat = await fetch(url, {
         method: "GET",
         credentials: "include",
@@ -180,10 +181,24 @@ export default function ContentMedia() {
         return;
       }
 
-      if (comments.length > 0)
-        cursor[post_id] = comments[comments.length - 1].created_at;
+      setComments((prev) => {
+        const existing = prev[post_id] || [];
+        const existingIDs = new Set(existing.map((cmt) => cmt.comment_id));
+        const newCMT = comments.filter((c) => !existingIDs.has(c.comment_id));
+        console.log(newCMT)
+        return {
+          ...prev,
+          [post_id]: [...existing, ...newCMT],
+        };
+      });
 
-      let div = "";
+      if (comments.length > 0)
+        setCursor((prev) => ({
+          ...prev,
+          [post_id]: comments[comments.length - 1].created_at,
+        }));
+
+      /*let div = "";
       for (const comment of comments) {
         div += `
                 <div id="comment-${comment.comment_id}">
@@ -196,7 +211,7 @@ export default function ContentMedia() {
           div += `<div><button class="delete-cmt-btn" data-post-id="${post_id}" data-author-id="${comment.p_comment_author_id}">Delete</button></div>`;
         div += `</div>`;
       }
-      commentsDiv.innerHTML += div;
+      commentsDiv.innerHTML += div;*/
 
       commentsDiv.classList.add("show");
       btn.disabled = false;
@@ -251,7 +266,6 @@ export default function ContentMedia() {
 
   async function HasFollowed(post_owner_id) {
     try {
-      console.log(post_owner_id);
       const result = await fetch(`${link}/api/post/followed`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -279,14 +293,13 @@ export default function ContentMedia() {
         credentials: "include",
       });
 
-      console.log(await result);
       const data = await result.json();
 
-      if (data) console.log(data);
-      setFollowing((prev) => ({
-        ...prev,
-        [user_id]: data,
-      }));
+      if (data)
+        setFollowing((prev) => ({
+          ...prev,
+          [user_id]: data,
+        }));
     } catch (err) {
       console.error(err);
     }
@@ -403,19 +416,21 @@ export default function ContentMedia() {
                 </form>
               </div>
               {comments[post.post_id]?.map((comment) =>
-                comment ? buildCommentsHTML(
-                  post.post_id,
-                  comment.p_comment_author_id,
-                  comment,
-                  currentOwner,
-                ) : null
+                comment
+                  ? buildCommentsHTML(
+                      post.post_id,
+                      comment.p_comment_author_id,
+                      comment,
+                      currentOwner,
+                    )
+                  : null,
               )}
               <div className="center" id={`center-${post.post_id}`}></div>
               <div className="btnplace">
                 <button
                   className="loadmore-btn"
                   data-post-id={post.post_id}
-                  onClick={(ev) => show_hidecmt(ev)}
+                  onClick={(ev) => loadmore(ev)}
                 >
                   Load More
                 </button>
@@ -447,25 +462,8 @@ export default function ContentMedia() {
 
     document.getElementById("Posts").addEventListener("click", async (ev) => {
       //Like btn
-
       //Comments btn
-
       //Load more btn
-      if (ev.target.classList.contains("loadmore-btn")) {
-        const post_id = ev.target.dataset.postId;
-        const btn = ev.target;
-        await loadmore(post_id, btn);
-      }
-
-      //Delete Cmt btn
-      /*if (ev.target.classList.contains("delete-cmt-btn")) {
-        const post_id = ev.target.dataset.postId;
-        const author_id = ev.target.dataset.authorId;
-        const comment_id = ev.target.dataset.commentId;
-        const btn = ev.target;
-
-        await deletecmt(comment_id, post_id, author_id, btn);
-      }*/
     });
 
     document.querySelectorAll(".options-btn").forEach((opt_btn) =>
@@ -547,9 +545,7 @@ export default function ContentMedia() {
           ))}
         </div>
         <div>
-          <footer>
-            Mini Media - 2026 &copy;
-          </footer>
+          <footer>Mini Media - 2026 &copy;</footer>
         </div>
       </div>
     </>
