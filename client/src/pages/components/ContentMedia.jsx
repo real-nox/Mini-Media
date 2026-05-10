@@ -460,11 +460,6 @@ export default function ContentMedia() {
       setPosts(list);
     }
 
-    document.getElementById("Posts").addEventListener("click", async (ev) => {
-      //Like btn
-      //Comments btn
-      //Load more btn
-    });
 
     document.querySelectorAll(".options-btn").forEach((opt_btn) =>
       opt_btn.addEventListener("click", (ev) => {
