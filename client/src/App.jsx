@@ -11,6 +11,7 @@ import RegisterPage from "./pages/Auth/Register";
 import CreatePost from "./pages/User/Create";
 import Settings from "./pages/User/Settings";
 import Profile from "./pages/User/Profile";
+import Logout from "./pages/Auth/Logout";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ function App() {
         <Route path="/create-post" element={<CreatePost user={user} />}/>
         <Route path="/settings" element={<Settings user={user}/>}/>
         <Route path="/profile" element={<Profile user={user} />}/>
+        <Route path="/logout" element={<Logout />}/>
       </Routes>
     </BrowserRouter>
   );

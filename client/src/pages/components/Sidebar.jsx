@@ -12,6 +12,9 @@ export default function SidebarComponent() {
       <Link className="sideBarElements" to="/settings">
         Settings
       </Link>
+      <Link className="sideBarElements down" to="/logout">
+        Logout
+      </Link>
     </div>
   );
 }

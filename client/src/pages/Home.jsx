@@ -6,6 +6,7 @@ export default function Home({ user }) {
   return (
     <>
       <TopbarComponent user={user} />
+      { console.log(user)}
       {user ? <HomePage /> : <GuestPage />}
     </>
   );

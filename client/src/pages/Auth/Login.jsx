@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import TopbarComponent from "../components/Topbar";
 
 function LoginPage({ user }) {
@@ -8,11 +7,9 @@ function LoginPage({ user }) {
 
   const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+    if (user) window.location.replace("/");
+  }, [user]);
 
   const handleLogin = async (ev) => {
     try {
@@ -29,8 +26,8 @@ function LoginPage({ user }) {
       });
 
       const data = await result.json();
-      console.log(data);
-      if (data.success) return navigate("/");
+      console.log("data", data);
+      if (data.success) return window.location.replace("/");
       else {
         setError(data.error);
         return setEmailUser(data.emailback);

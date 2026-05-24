@@ -53,14 +53,13 @@ export const logout = async(req, res, next) => {
         if (!req.cookies)
             res.status(401).json("Unauthorized method")
 
-
         //Removal from db
         await login_service.logoutUser(req.user.user_id, req.cookies.ssid)
 
         //clear cookies
         res.clearCookie("ssid")
         res.clearCookie("shssid")
-        res.redirect("/")
+        res.json(true)
     } catch (err) {
         console.error(err)
     }
